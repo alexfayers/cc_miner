@@ -1,2 +1,2 @@
-include src/new_project_name/VERSION
-include src/new_project_name/py.typed
+include src/cc_miner/VERSION
+include src/cc_miner/py.typed

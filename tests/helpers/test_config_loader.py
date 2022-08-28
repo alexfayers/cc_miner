@@ -1,8 +1,8 @@
-"""Tests for the `new_project_name.helpers.config_loader` module."""
+"""Tests for the `cc_miner.helpers.config_loader` module."""
 
 from pytest import LogCaptureFixture
 
-from new_project_name.helpers.config_loader import Config, ConfigSection
+from cc_miner.helpers.config_loader import Config, ConfigSection
 
 
 def test_config_loader(caplog: LogCaptureFixture) -> None:

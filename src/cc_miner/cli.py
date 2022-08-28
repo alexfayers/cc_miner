@@ -1,4 +1,4 @@
-"""CLI functionality of `new_project_name`."""
+"""CLI functionality of `cc_miner`."""
 
 import logging
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
@@ -7,7 +7,7 @@ from . import BaseClass
 
 
 def cli_main() -> None:
-    """CLI entrypoint for `new_project_name`. Uses `BaseClass`."""
+    """CLI entrypoint for `cc_miner`. Uses `BaseClass`."""
     argparser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
     argparser.add_argument(
         "-c", "--config", help="Path to config file", type=str, default="config.yml"
@@ -21,7 +21,7 @@ def cli_main() -> None:
     verbose_logging = args.verbose
 
     if verbose_logging:
-        logger = logging.getLogger("new_project_name")
+        logger = logging.getLogger("cc_miner")
         logger.setLevel(logging.DEBUG)
 
     app = BaseClass(config_file)
