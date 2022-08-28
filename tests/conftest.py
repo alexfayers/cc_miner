@@ -1,5 +1,6 @@
 """Pytest test configuration."""
 import pytest
+
 from cc_miner.core.turtle import Turtle
 
 
