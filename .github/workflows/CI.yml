@@ -30,7 +30,8 @@ jobs:
         python -m pip install tox
 
     - name: Lint and format with tox
-      run: tox -e lint; return 0
+      continue-on-error: true
+      run: tox -e lint
 
     - name: Lint and format with tox again to make sure auto-formatting completed
       run: tox -e lint
