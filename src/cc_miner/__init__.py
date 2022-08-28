@@ -2,6 +2,7 @@
 
 import logging
 
+from . import core
 from ._helper import ColoredFormatter as _ColoredFormatter
 from ._helper import SuccessLogger as _SuccessLogger
 

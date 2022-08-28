@@ -90,11 +90,10 @@
 
                         <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos">1</span></a><span class="sd">&quot;&quot;&quot;Representation of a CC turtle.&quot;&quot;&quot;</span>
 </span><span id="L-2"><a href="#L-2"><span class="linenos">2</span></a>
-</span><span id="L-3"><a href="#L-3"><span class="linenos">3</span></a><span class="kn">from</span> <span class="nn">.turtle</span> <span class="kn">import</span> <span class="n">Turtle</span>
-</span><span id="L-4"><a href="#L-4"><span class="linenos">4</span></a><span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">exceptions</span><span class="p">,</span> <span class="n">types</span>
+</span><span id="L-3"><a href="#L-3"><span class="linenos">3</span></a><span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">exceptions</span><span class="p">,</span> <span class="n">types</span>
+</span><span id="L-4"><a href="#L-4"><span class="linenos">4</span></a><span class="kn">from</span> <span class="nn">.turtle</span> <span class="kn">import</span> <span class="n">Turtle</span>
 </span><span id="L-5"><a href="#L-5"><span class="linenos">5</span></a>
-</span><span id="L-6"><a href="#L-6"><span class="linenos">6</span></a>
-</span><span id="L-7"><a href="#L-7"><span class="linenos">7</span></a><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Turtle&quot;</span><span class="p">,</span> <span class="s2">&quot;exceptions&quot;</span><span class="p">,</span> <span class="s2">&quot;types&quot;</span><span class="p">]</span>
+</span><span id="L-6"><a href="#L-6"><span class="linenos">6</span></a><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Turtle&quot;</span><span class="p">,</span> <span class="s2">&quot;exceptions&quot;</span><span class="p">,</span> <span class="s2">&quot;types&quot;</span><span class="p">]</span>
 </span></pre></div>
 
 
@@ -115,20 +114,20 @@
 </span><span id="Turtle-10"><a href="#Turtle-10"><span class="linenos"> 10</span></a>
 </span><span id="Turtle-11"><a href="#Turtle-11"><span class="linenos"> 11</span></a>    <span class="n">uid</span><span class="p">:</span> <span class="nb">int</span>
 </span><span id="Turtle-12"><a href="#Turtle-12"><span class="linenos"> 12</span></a>    <span class="sd">&quot;&quot;&quot;The unique id of the turtle.&quot;&quot;&quot;</span>
-</span><span id="Turtle-13"><a href="#Turtle-13"><span class="linenos"> 13</span></a>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span id="Turtle-13"><a href="#Turtle-13"><span class="linenos"> 13</span></a>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 </span><span id="Turtle-14"><a href="#Turtle-14"><span class="linenos"> 14</span></a>    <span class="sd">&quot;&quot;&quot;The name of the turtle.&quot;&quot;&quot;</span>
-</span><span id="Turtle-15"><a href="#Turtle-15"><span class="linenos"> 15</span></a>    <span class="n">position</span><span class="p">:</span> <span class="n">Position</span>
-</span><span id="Turtle-16"><a href="#Turtle-16"><span class="linenos"> 16</span></a>    <span class="sd">&quot;&quot;&quot;The current position of the turtle.&quot;&quot;&quot;</span>
+</span><span id="Turtle-15"><a href="#Turtle-15"><span class="linenos"> 15</span></a>    <span class="n">_position</span><span class="p">:</span> <span class="n">Position</span>
+</span><span id="Turtle-16"><a href="#Turtle-16"><span class="linenos"> 16</span></a>    <span class="sd">&quot;&quot;&quot;The (internal) current position of the turtle.&quot;&quot;&quot;</span>
 </span><span id="Turtle-17"><a href="#Turtle-17"><span class="linenos"> 17</span></a>
-</span><span id="Turtle-18"><a href="#Turtle-18"><span class="linenos"> 18</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-</span><span id="Turtle-19"><a href="#Turtle-19"><span class="linenos"> 19</span></a>        <span class="bp">self</span><span class="p">,</span>
-</span><span id="Turtle-20"><a href="#Turtle-20"><span class="linenos"> 20</span></a>        <span class="n">uid</span><span class="p">:</span> <span class="nb">int</span>
-</span><span id="Turtle-21"><a href="#Turtle-21"><span class="linenos"> 21</span></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="Turtle-22"><a href="#Turtle-22"><span class="linenos"> 22</span></a>        <span class="sd">&quot;&quot;&quot;Initialise a turtle representation.</span>
-</span><span id="Turtle-23"><a href="#Turtle-23"><span class="linenos"> 23</span></a>
-</span><span id="Turtle-24"><a href="#Turtle-24"><span class="linenos"> 24</span></a><span class="sd">        Args:</span>
-</span><span id="Turtle-25"><a href="#Turtle-25"><span class="linenos"> 25</span></a><span class="sd">            uid (int): The unique id of the `Turtle`.</span>
-</span><span id="Turtle-26"><a href="#Turtle-26"><span class="linenos"> 26</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Turtle-18"><a href="#Turtle-18"><span class="linenos"> 18</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uid</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="Turtle-19"><a href="#Turtle-19"><span class="linenos"> 19</span></a>        <span class="sd">&quot;&quot;&quot;Initialise a turtle representation.</span>
+</span><span id="Turtle-20"><a href="#Turtle-20"><span class="linenos"> 20</span></a>
+</span><span id="Turtle-21"><a href="#Turtle-21"><span class="linenos"> 21</span></a><span class="sd">        Args:</span>
+</span><span id="Turtle-22"><a href="#Turtle-22"><span class="linenos"> 22</span></a><span class="sd">            uid (int): The unique id of the `Turtle`.</span>
+</span><span id="Turtle-23"><a href="#Turtle-23"><span class="linenos"> 23</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Turtle-24"><a href="#Turtle-24"><span class="linenos"> 24</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_position</span> <span class="o">=</span> <span class="n">Position</span><span class="p">(</span>
+</span><span id="Turtle-25"><a href="#Turtle-25"><span class="linenos"> 25</span></a>            <span class="n">location</span><span class="o">=</span><span class="n">Location</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">bearing</span><span class="o">=</span><span class="n">Bearing</span><span class="o">.</span><span class="n">NORTH</span>
+</span><span id="Turtle-26"><a href="#Turtle-26"><span class="linenos"> 26</span></a>        <span class="p">)</span>
 </span><span id="Turtle-27"><a href="#Turtle-27"><span class="linenos"> 27</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">uid</span> <span class="o">=</span> <span class="n">uid</span>
 </span><span id="Turtle-28"><a href="#Turtle-28"><span class="linenos"> 28</span></a>
 </span><span id="Turtle-29"><a href="#Turtle-29"><span class="linenos"> 29</span></a>    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -161,69 +160,77 @@
 </span><span id="Turtle-56"><a href="#Turtle-56"><span class="linenos"> 56</span></a>            <span class="n">position_change</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 </span><span id="Turtle-57"><a href="#Turtle-57"><span class="linenos"> 57</span></a>            <span class="n">horizontal_movement</span> <span class="o">=</span> <span class="kc">True</span>
 </span><span id="Turtle-58"><a href="#Turtle-58"><span class="linenos"> 58</span></a>        <span class="k">elif</span> <span class="n">direction</span> <span class="o">==</span> <span class="n">Direction</span><span class="o">.</span><span class="n">BACK</span><span class="p">:</span>
-</span><span id="Turtle-59"><a href="#Turtle-59"><span class="linenos"> 59</span></a>            <span class="n">position_change</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+</span><span id="Turtle-59"><a href="#Turtle-59"><span class="linenos"> 59</span></a>            <span class="n">position_change</span> <span class="o">=</span> <span class="mi">1</span>
 </span><span id="Turtle-60"><a href="#Turtle-60"><span class="linenos"> 60</span></a>            <span class="n">horizontal_movement</span> <span class="o">=</span> <span class="kc">True</span>
 </span><span id="Turtle-61"><a href="#Turtle-61"><span class="linenos"> 61</span></a>        <span class="k">elif</span> <span class="n">direction</span> <span class="o">==</span> <span class="n">Direction</span><span class="o">.</span><span class="n">UP</span><span class="p">:</span>
 </span><span id="Turtle-62"><a href="#Turtle-62"><span class="linenos"> 62</span></a>            <span class="n">position_change</span> <span class="o">=</span> <span class="mi">1</span>
 </span><span id="Turtle-63"><a href="#Turtle-63"><span class="linenos"> 63</span></a>        <span class="k">elif</span> <span class="n">direction</span> <span class="o">==</span> <span class="n">Direction</span><span class="o">.</span><span class="n">DOWN</span><span class="p">:</span>
-</span><span id="Turtle-64"><a href="#Turtle-64"><span class="linenos"> 64</span></a>            <span class="n">position_change</span> <span class="o">-=</span> <span class="mi">1</span>
+</span><span id="Turtle-64"><a href="#Turtle-64"><span class="linenos"> 64</span></a>            <span class="n">position_change</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 </span><span id="Turtle-65"><a href="#Turtle-65"><span class="linenos"> 65</span></a>        <span class="k">else</span><span class="p">:</span>
 </span><span id="Turtle-66"><a href="#Turtle-66"><span class="linenos"> 66</span></a>            <span class="k">raise</span> <span class="n">MovementException</span><span class="p">(</span><span class="s2">&quot;Bad direction.&quot;</span><span class="p">)</span>
 </span><span id="Turtle-67"><a href="#Turtle-67"><span class="linenos"> 67</span></a>
 </span><span id="Turtle-68"><a href="#Turtle-68"><span class="linenos"> 68</span></a>        <span class="k">if</span> <span class="n">horizontal_movement</span><span class="p">:</span>
 </span><span id="Turtle-69"><a href="#Turtle-69"><span class="linenos"> 69</span></a>            <span class="c1"># we&#39;re moving in the x or z plane</span>
-</span><span id="Turtle-70"><a href="#Turtle-70"><span class="linenos"> 70</span></a>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">bearing</span> <span class="o">==</span> <span class="n">Bearing</span><span class="o">.</span><span class="n">NORTH</span><span class="p">:</span>
+</span><span id="Turtle-70"><a href="#Turtle-70"><span class="linenos"> 70</span></a>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">bearing</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Bearing</span><span class="o">.</span><span class="n">NORTH</span><span class="p">,</span> <span class="n">Bearing</span><span class="o">.</span><span class="n">SOUTH</span><span class="p">]:</span>
 </span><span id="Turtle-71"><a href="#Turtle-71"><span class="linenos"> 71</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">z</span> <span class="o">+=</span> <span class="n">position_change</span>
-</span><span id="Turtle-72"><a href="#Turtle-72"><span class="linenos"> 72</span></a>            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">bearing</span> <span class="o">==</span> <span class="n">Bearing</span><span class="o">.</span><span class="n">EAST</span><span class="p">:</span>
-</span><span id="Turtle-73"><a href="#Turtle-73"><span class="linenos"> 73</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">x</span> <span class="o">-=</span> <span class="n">position_change</span>
-</span><span id="Turtle-74"><a href="#Turtle-74"><span class="linenos"> 74</span></a>            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">bearing</span> <span class="o">==</span> <span class="n">Bearing</span><span class="o">.</span><span class="n">SOUTH</span><span class="p">:</span>
-</span><span id="Turtle-75"><a href="#Turtle-75"><span class="linenos"> 75</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">z</span> <span class="o">-=</span> <span class="n">position_change</span>
-</span><span id="Turtle-76"><a href="#Turtle-76"><span class="linenos"> 76</span></a>            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">bearing</span> <span class="o">==</span> <span class="n">Bearing</span><span class="o">.</span><span class="n">WEST</span><span class="p">:</span>
-</span><span id="Turtle-77"><a href="#Turtle-77"><span class="linenos"> 77</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">x</span> <span class="o">+=</span> <span class="n">position_change</span>
-</span><span id="Turtle-78"><a href="#Turtle-78"><span class="linenos"> 78</span></a>            <span class="k">else</span><span class="p">:</span>
-</span><span id="Turtle-79"><a href="#Turtle-79"><span class="linenos"> 79</span></a>                <span class="k">raise</span> <span class="n">MovementException</span><span class="p">(</span><span class="s2">&quot;Bad bearing.&quot;</span><span class="p">)</span>
-</span><span id="Turtle-80"><a href="#Turtle-80"><span class="linenos"> 80</span></a>
-</span><span id="Turtle-81"><a href="#Turtle-81"><span class="linenos"> 81</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_command</span><span class="p">(</span><span class="s2">&quot;forward&quot;</span><span class="p">)</span>
-</span><span id="Turtle-82"><a href="#Turtle-82"><span class="linenos"> 82</span></a>        <span class="k">else</span><span class="p">:</span>
-</span><span id="Turtle-83"><a href="#Turtle-83"><span class="linenos"> 83</span></a>            <span class="c1"># we&#39;re moving in the y plane</span>
-</span><span id="Turtle-84"><a href="#Turtle-84"><span class="linenos"> 84</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">y</span> <span class="o">+=</span> <span class="n">position_change</span>
-</span><span id="Turtle-85"><a href="#Turtle-85"><span class="linenos"> 85</span></a>
-</span><span id="Turtle-86"><a href="#Turtle-86"><span class="linenos"> 86</span></a>            <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="n">Direction</span><span class="o">.</span><span class="n">UP</span><span class="p">:</span>
-</span><span id="Turtle-87"><a href="#Turtle-87"><span class="linenos"> 87</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">_command</span><span class="p">(</span><span class="s2">&quot;up&quot;</span><span class="p">)</span>
-</span><span id="Turtle-88"><a href="#Turtle-88"><span class="linenos"> 88</span></a>            <span class="k">elif</span> <span class="n">direction</span> <span class="o">==</span> <span class="n">Direction</span><span class="o">.</span><span class="n">DOWN</span><span class="p">:</span>
-</span><span id="Turtle-89"><a href="#Turtle-89"><span class="linenos"> 89</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">_command</span><span class="p">(</span><span class="s2">&quot;down&quot;</span><span class="p">)</span>
-</span><span id="Turtle-90"><a href="#Turtle-90"><span class="linenos"> 90</span></a>
-</span><span id="Turtle-91"><a href="#Turtle-91"><span class="linenos"> 91</span></a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="Turtle-92"><a href="#Turtle-92"><span class="linenos"> 92</span></a>        <span class="sd">&quot;&quot;&quot;Move the turtle forwards.</span>
-</span><span id="Turtle-93"><a href="#Turtle-93"><span class="linenos"> 93</span></a>
-</span><span id="Turtle-94"><a href="#Turtle-94"><span class="linenos"> 94</span></a><span class="sd">        Raises:</span>
-</span><span id="Turtle-95"><a href="#Turtle-95"><span class="linenos"> 95</span></a><span class="sd">            MovementException: If the movement was not successful.</span>
-</span><span id="Turtle-96"><a href="#Turtle-96"><span class="linenos"> 96</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Turtle-97"><a href="#Turtle-97"><span class="linenos"> 97</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_move_step</span><span class="p">(</span><span class="n">Direction</span><span class="o">.</span><span class="n">FORWARD</span><span class="p">)</span>
+</span><span id="Turtle-72"><a href="#Turtle-72"><span class="linenos"> 72</span></a>
+</span><span id="Turtle-73"><a href="#Turtle-73"><span class="linenos"> 73</span></a>            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">bearing</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Bearing</span><span class="o">.</span><span class="n">WEST</span><span class="p">,</span> <span class="n">Bearing</span><span class="o">.</span><span class="n">EAST</span><span class="p">]:</span>
+</span><span id="Turtle-74"><a href="#Turtle-74"><span class="linenos"> 74</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">x</span> <span class="o">+=</span> <span class="n">position_change</span>
+</span><span id="Turtle-75"><a href="#Turtle-75"><span class="linenos"> 75</span></a>
+</span><span id="Turtle-76"><a href="#Turtle-76"><span class="linenos"> 76</span></a>            <span class="k">else</span><span class="p">:</span>
+</span><span id="Turtle-77"><a href="#Turtle-77"><span class="linenos"> 77</span></a>                <span class="k">raise</span> <span class="n">MovementException</span><span class="p">(</span><span class="s2">&quot;Bad bearing.&quot;</span><span class="p">)</span>
+</span><span id="Turtle-78"><a href="#Turtle-78"><span class="linenos"> 78</span></a>
+</span><span id="Turtle-79"><a href="#Turtle-79"><span class="linenos"> 79</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_command</span><span class="p">(</span><span class="s2">&quot;forward&quot;</span><span class="p">)</span>
+</span><span id="Turtle-80"><a href="#Turtle-80"><span class="linenos"> 80</span></a>        <span class="k">else</span><span class="p">:</span>
+</span><span id="Turtle-81"><a href="#Turtle-81"><span class="linenos"> 81</span></a>            <span class="c1"># we&#39;re moving in the y plane</span>
+</span><span id="Turtle-82"><a href="#Turtle-82"><span class="linenos"> 82</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">y</span> <span class="o">+=</span> <span class="n">position_change</span>
+</span><span id="Turtle-83"><a href="#Turtle-83"><span class="linenos"> 83</span></a>
+</span><span id="Turtle-84"><a href="#Turtle-84"><span class="linenos"> 84</span></a>            <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="n">Direction</span><span class="o">.</span><span class="n">UP</span><span class="p">:</span>
+</span><span id="Turtle-85"><a href="#Turtle-85"><span class="linenos"> 85</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">_command</span><span class="p">(</span><span class="s2">&quot;up&quot;</span><span class="p">)</span>
+</span><span id="Turtle-86"><a href="#Turtle-86"><span class="linenos"> 86</span></a>            <span class="k">elif</span> <span class="n">direction</span> <span class="o">==</span> <span class="n">Direction</span><span class="o">.</span><span class="n">DOWN</span><span class="p">:</span>
+</span><span id="Turtle-87"><a href="#Turtle-87"><span class="linenos"> 87</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">_command</span><span class="p">(</span><span class="s2">&quot;down&quot;</span><span class="p">)</span>
+</span><span id="Turtle-88"><a href="#Turtle-88"><span class="linenos"> 88</span></a>
+</span><span id="Turtle-89"><a href="#Turtle-89"><span class="linenos"> 89</span></a>    <span class="nd">@property</span>
+</span><span id="Turtle-90"><a href="#Turtle-90"><span class="linenos"> 90</span></a>    <span class="k">def</span> <span class="nf">position</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Position</span><span class="p">:</span>
+</span><span id="Turtle-91"><a href="#Turtle-91"><span class="linenos"> 91</span></a>        <span class="sd">&quot;&quot;&quot;The current position of the `Turtle`.&quot;&quot;&quot;</span>
+</span><span id="Turtle-92"><a href="#Turtle-92"><span class="linenos"> 92</span></a>        <span class="c1"># TODO: use commands/gps to get position</span>
+</span><span id="Turtle-93"><a href="#Turtle-93"><span class="linenos"> 93</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_position</span>
+</span><span id="Turtle-94"><a href="#Turtle-94"><span class="linenos"> 94</span></a>
+</span><span id="Turtle-95"><a href="#Turtle-95"><span class="linenos"> 95</span></a>    <span class="nd">@position</span><span class="o">.</span><span class="n">setter</span>
+</span><span id="Turtle-96"><a href="#Turtle-96"><span class="linenos"> 96</span></a>    <span class="k">def</span> <span class="nf">position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Position</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="Turtle-97"><a href="#Turtle-97"><span class="linenos"> 97</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_position</span> <span class="o">=</span> <span class="n">value</span>
 </span><span id="Turtle-98"><a href="#Turtle-98"><span class="linenos"> 98</span></a>
-</span><span id="Turtle-99"><a href="#Turtle-99"><span class="linenos"> 99</span></a>    <span class="k">def</span> <span class="nf">back</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="Turtle-100"><a href="#Turtle-100"><span class="linenos">100</span></a>        <span class="sd">&quot;&quot;&quot;Move the turtle backwards.</span>
+</span><span id="Turtle-99"><a href="#Turtle-99"><span class="linenos"> 99</span></a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="Turtle-100"><a href="#Turtle-100"><span class="linenos">100</span></a>        <span class="sd">&quot;&quot;&quot;Move the turtle forwards.</span>
 </span><span id="Turtle-101"><a href="#Turtle-101"><span class="linenos">101</span></a>
 </span><span id="Turtle-102"><a href="#Turtle-102"><span class="linenos">102</span></a><span class="sd">        Raises:</span>
 </span><span id="Turtle-103"><a href="#Turtle-103"><span class="linenos">103</span></a><span class="sd">            MovementException: If the movement was not successful.</span>
 </span><span id="Turtle-104"><a href="#Turtle-104"><span class="linenos">104</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Turtle-105"><a href="#Turtle-105"><span class="linenos">105</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_move_step</span><span class="p">(</span><span class="n">Direction</span><span class="o">.</span><span class="n">BACK</span><span class="p">)</span>
+</span><span id="Turtle-105"><a href="#Turtle-105"><span class="linenos">105</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_move_step</span><span class="p">(</span><span class="n">Direction</span><span class="o">.</span><span class="n">FORWARD</span><span class="p">)</span>
 </span><span id="Turtle-106"><a href="#Turtle-106"><span class="linenos">106</span></a>
-</span><span id="Turtle-107"><a href="#Turtle-107"><span class="linenos">107</span></a>    <span class="k">def</span> <span class="nf">up</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="Turtle-108"><a href="#Turtle-108"><span class="linenos">108</span></a>        <span class="sd">&quot;&quot;&quot;Move the turtle upwards.</span>
+</span><span id="Turtle-107"><a href="#Turtle-107"><span class="linenos">107</span></a>    <span class="k">def</span> <span class="nf">back</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="Turtle-108"><a href="#Turtle-108"><span class="linenos">108</span></a>        <span class="sd">&quot;&quot;&quot;Move the turtle backwards.</span>
 </span><span id="Turtle-109"><a href="#Turtle-109"><span class="linenos">109</span></a>
 </span><span id="Turtle-110"><a href="#Turtle-110"><span class="linenos">110</span></a><span class="sd">        Raises:</span>
 </span><span id="Turtle-111"><a href="#Turtle-111"><span class="linenos">111</span></a><span class="sd">            MovementException: If the movement was not successful.</span>
 </span><span id="Turtle-112"><a href="#Turtle-112"><span class="linenos">112</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Turtle-113"><a href="#Turtle-113"><span class="linenos">113</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_move_step</span><span class="p">(</span><span class="n">Direction</span><span class="o">.</span><span class="n">UP</span><span class="p">)</span>
+</span><span id="Turtle-113"><a href="#Turtle-113"><span class="linenos">113</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_move_step</span><span class="p">(</span><span class="n">Direction</span><span class="o">.</span><span class="n">BACK</span><span class="p">)</span>
 </span><span id="Turtle-114"><a href="#Turtle-114"><span class="linenos">114</span></a>
-</span><span id="Turtle-115"><a href="#Turtle-115"><span class="linenos">115</span></a>    <span class="k">def</span> <span class="nf">down</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="Turtle-116"><a href="#Turtle-116"><span class="linenos">116</span></a>        <span class="sd">&quot;&quot;&quot;Move the turtle downwards.</span>
+</span><span id="Turtle-115"><a href="#Turtle-115"><span class="linenos">115</span></a>    <span class="k">def</span> <span class="nf">up</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="Turtle-116"><a href="#Turtle-116"><span class="linenos">116</span></a>        <span class="sd">&quot;&quot;&quot;Move the turtle upwards.</span>
 </span><span id="Turtle-117"><a href="#Turtle-117"><span class="linenos">117</span></a>
 </span><span id="Turtle-118"><a href="#Turtle-118"><span class="linenos">118</span></a><span class="sd">        Raises:</span>
 </span><span id="Turtle-119"><a href="#Turtle-119"><span class="linenos">119</span></a><span class="sd">            MovementException: If the movement was not successful.</span>
 </span><span id="Turtle-120"><a href="#Turtle-120"><span class="linenos">120</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Turtle-121"><a href="#Turtle-121"><span class="linenos">121</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_move_step</span><span class="p">(</span><span class="n">Direction</span><span class="o">.</span><span class="n">DOWN</span><span class="p">)</span>
+</span><span id="Turtle-121"><a href="#Turtle-121"><span class="linenos">121</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_move_step</span><span class="p">(</span><span class="n">Direction</span><span class="o">.</span><span class="n">UP</span><span class="p">)</span>
+</span><span id="Turtle-122"><a href="#Turtle-122"><span class="linenos">122</span></a>
+</span><span id="Turtle-123"><a href="#Turtle-123"><span class="linenos">123</span></a>    <span class="k">def</span> <span class="nf">down</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="Turtle-124"><a href="#Turtle-124"><span class="linenos">124</span></a>        <span class="sd">&quot;&quot;&quot;Move the turtle downwards.</span>
+</span><span id="Turtle-125"><a href="#Turtle-125"><span class="linenos">125</span></a>
+</span><span id="Turtle-126"><a href="#Turtle-126"><span class="linenos">126</span></a><span class="sd">        Raises:</span>
+</span><span id="Turtle-127"><a href="#Turtle-127"><span class="linenos">127</span></a><span class="sd">            MovementException: If the movement was not successful.</span>
+</span><span id="Turtle-128"><a href="#Turtle-128"><span class="linenos">128</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Turtle-129"><a href="#Turtle-129"><span class="linenos">129</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_move_step</span><span class="p">(</span><span class="n">Direction</span><span class="o">.</span><span class="n">DOWN</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -241,15 +248,15 @@
 
     </div>
     <a class="headerlink" href="#Turtle.__init__"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Turtle.__init__-18"><a href="#Turtle.__init__-18"><span class="linenos">18</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-</span><span id="Turtle.__init__-19"><a href="#Turtle.__init__-19"><span class="linenos">19</span></a>        <span class="bp">self</span><span class="p">,</span>
-</span><span id="Turtle.__init__-20"><a href="#Turtle.__init__-20"><span class="linenos">20</span></a>        <span class="n">uid</span><span class="p">:</span> <span class="nb">int</span>
-</span><span id="Turtle.__init__-21"><a href="#Turtle.__init__-21"><span class="linenos">21</span></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="Turtle.__init__-22"><a href="#Turtle.__init__-22"><span class="linenos">22</span></a>        <span class="sd">&quot;&quot;&quot;Initialise a turtle representation.</span>
-</span><span id="Turtle.__init__-23"><a href="#Turtle.__init__-23"><span class="linenos">23</span></a>
-</span><span id="Turtle.__init__-24"><a href="#Turtle.__init__-24"><span class="linenos">24</span></a><span class="sd">        Args:</span>
-</span><span id="Turtle.__init__-25"><a href="#Turtle.__init__-25"><span class="linenos">25</span></a><span class="sd">            uid (int): The unique id of the `Turtle`.</span>
-</span><span id="Turtle.__init__-26"><a href="#Turtle.__init__-26"><span class="linenos">26</span></a><span class="sd">        &quot;&quot;&quot;</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Turtle.__init__-18"><a href="#Turtle.__init__-18"><span class="linenos">18</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uid</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="Turtle.__init__-19"><a href="#Turtle.__init__-19"><span class="linenos">19</span></a>        <span class="sd">&quot;&quot;&quot;Initialise a turtle representation.</span>
+</span><span id="Turtle.__init__-20"><a href="#Turtle.__init__-20"><span class="linenos">20</span></a>
+</span><span id="Turtle.__init__-21"><a href="#Turtle.__init__-21"><span class="linenos">21</span></a><span class="sd">        Args:</span>
+</span><span id="Turtle.__init__-22"><a href="#Turtle.__init__-22"><span class="linenos">22</span></a><span class="sd">            uid (int): The unique id of the `Turtle`.</span>
+</span><span id="Turtle.__init__-23"><a href="#Turtle.__init__-23"><span class="linenos">23</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Turtle.__init__-24"><a href="#Turtle.__init__-24"><span class="linenos">24</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_position</span> <span class="o">=</span> <span class="n">Position</span><span class="p">(</span>
+</span><span id="Turtle.__init__-25"><a href="#Turtle.__init__-25"><span class="linenos">25</span></a>            <span class="n">location</span><span class="o">=</span><span class="n">Location</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">bearing</span><span class="o">=</span><span class="n">Bearing</span><span class="o">.</span><span class="n">NORTH</span>
+</span><span id="Turtle.__init__-26"><a href="#Turtle.__init__-26"><span class="linenos">26</span></a>        <span class="p">)</span>
 </span><span id="Turtle.__init__-27"><a href="#Turtle.__init__-27"><span class="linenos">27</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">uid</span> <span class="o">=</span> <span class="n">uid</span>
 </span></pre></div>
 
@@ -280,7 +287,7 @@
                             </div>
                             <div id="Turtle.name" class="classattr">
                                 <div class="attr variable">
-            <span class="name">name</span><span class="annotation">: str</span>
+            <span class="name">name</span><span class="annotation">: str</span><span class="default_value"> = &#39;&#39;</span>
 
         
     </div>
@@ -299,7 +306,7 @@
     </div>
     <a class="headerlink" href="#Turtle.position"></a>
     
-            <div class="docstring"><p>The current position of the turtle.</p>
+            <div class="docstring"><p>The current position of the <code><a href="#Turtle">Turtle</a></code>.</p>
 </div>
 
 
@@ -315,13 +322,13 @@
 
     </div>
     <a class="headerlink" href="#Turtle.forward"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Turtle.forward-91"><a href="#Turtle.forward-91"><span class="linenos">91</span></a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="Turtle.forward-92"><a href="#Turtle.forward-92"><span class="linenos">92</span></a>        <span class="sd">&quot;&quot;&quot;Move the turtle forwards.</span>
-</span><span id="Turtle.forward-93"><a href="#Turtle.forward-93"><span class="linenos">93</span></a>
-</span><span id="Turtle.forward-94"><a href="#Turtle.forward-94"><span class="linenos">94</span></a><span class="sd">        Raises:</span>
-</span><span id="Turtle.forward-95"><a href="#Turtle.forward-95"><span class="linenos">95</span></a><span class="sd">            MovementException: If the movement was not successful.</span>
-</span><span id="Turtle.forward-96"><a href="#Turtle.forward-96"><span class="linenos">96</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Turtle.forward-97"><a href="#Turtle.forward-97"><span class="linenos">97</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_move_step</span><span class="p">(</span><span class="n">Direction</span><span class="o">.</span><span class="n">FORWARD</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Turtle.forward-99"><a href="#Turtle.forward-99"><span class="linenos"> 99</span></a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="Turtle.forward-100"><a href="#Turtle.forward-100"><span class="linenos">100</span></a>        <span class="sd">&quot;&quot;&quot;Move the turtle forwards.</span>
+</span><span id="Turtle.forward-101"><a href="#Turtle.forward-101"><span class="linenos">101</span></a>
+</span><span id="Turtle.forward-102"><a href="#Turtle.forward-102"><span class="linenos">102</span></a><span class="sd">        Raises:</span>
+</span><span id="Turtle.forward-103"><a href="#Turtle.forward-103"><span class="linenos">103</span></a><span class="sd">            MovementException: If the movement was not successful.</span>
+</span><span id="Turtle.forward-104"><a href="#Turtle.forward-104"><span class="linenos">104</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Turtle.forward-105"><a href="#Turtle.forward-105"><span class="linenos">105</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_move_step</span><span class="p">(</span><span class="n">Direction</span><span class="o">.</span><span class="n">FORWARD</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -347,13 +354,13 @@
 
     </div>
     <a class="headerlink" href="#Turtle.back"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Turtle.back-99"><a href="#Turtle.back-99"><span class="linenos"> 99</span></a>    <span class="k">def</span> <span class="nf">back</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="Turtle.back-100"><a href="#Turtle.back-100"><span class="linenos">100</span></a>        <span class="sd">&quot;&quot;&quot;Move the turtle backwards.</span>
-</span><span id="Turtle.back-101"><a href="#Turtle.back-101"><span class="linenos">101</span></a>
-</span><span id="Turtle.back-102"><a href="#Turtle.back-102"><span class="linenos">102</span></a><span class="sd">        Raises:</span>
-</span><span id="Turtle.back-103"><a href="#Turtle.back-103"><span class="linenos">103</span></a><span class="sd">            MovementException: If the movement was not successful.</span>
-</span><span id="Turtle.back-104"><a href="#Turtle.back-104"><span class="linenos">104</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Turtle.back-105"><a href="#Turtle.back-105"><span class="linenos">105</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_move_step</span><span class="p">(</span><span class="n">Direction</span><span class="o">.</span><span class="n">BACK</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Turtle.back-107"><a href="#Turtle.back-107"><span class="linenos">107</span></a>    <span class="k">def</span> <span class="nf">back</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="Turtle.back-108"><a href="#Turtle.back-108"><span class="linenos">108</span></a>        <span class="sd">&quot;&quot;&quot;Move the turtle backwards.</span>
+</span><span id="Turtle.back-109"><a href="#Turtle.back-109"><span class="linenos">109</span></a>
+</span><span id="Turtle.back-110"><a href="#Turtle.back-110"><span class="linenos">110</span></a><span class="sd">        Raises:</span>
+</span><span id="Turtle.back-111"><a href="#Turtle.back-111"><span class="linenos">111</span></a><span class="sd">            MovementException: If the movement was not successful.</span>
+</span><span id="Turtle.back-112"><a href="#Turtle.back-112"><span class="linenos">112</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Turtle.back-113"><a href="#Turtle.back-113"><span class="linenos">113</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_move_step</span><span class="p">(</span><span class="n">Direction</span><span class="o">.</span><span class="n">BACK</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -379,13 +386,13 @@
 
     </div>
     <a class="headerlink" href="#Turtle.up"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Turtle.up-107"><a href="#Turtle.up-107"><span class="linenos">107</span></a>    <span class="k">def</span> <span class="nf">up</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="Turtle.up-108"><a href="#Turtle.up-108"><span class="linenos">108</span></a>        <span class="sd">&quot;&quot;&quot;Move the turtle upwards.</span>
-</span><span id="Turtle.up-109"><a href="#Turtle.up-109"><span class="linenos">109</span></a>
-</span><span id="Turtle.up-110"><a href="#Turtle.up-110"><span class="linenos">110</span></a><span class="sd">        Raises:</span>
-</span><span id="Turtle.up-111"><a href="#Turtle.up-111"><span class="linenos">111</span></a><span class="sd">            MovementException: If the movement was not successful.</span>
-</span><span id="Turtle.up-112"><a href="#Turtle.up-112"><span class="linenos">112</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Turtle.up-113"><a href="#Turtle.up-113"><span class="linenos">113</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_move_step</span><span class="p">(</span><span class="n">Direction</span><span class="o">.</span><span class="n">UP</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Turtle.up-115"><a href="#Turtle.up-115"><span class="linenos">115</span></a>    <span class="k">def</span> <span class="nf">up</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="Turtle.up-116"><a href="#Turtle.up-116"><span class="linenos">116</span></a>        <span class="sd">&quot;&quot;&quot;Move the turtle upwards.</span>
+</span><span id="Turtle.up-117"><a href="#Turtle.up-117"><span class="linenos">117</span></a>
+</span><span id="Turtle.up-118"><a href="#Turtle.up-118"><span class="linenos">118</span></a><span class="sd">        Raises:</span>
+</span><span id="Turtle.up-119"><a href="#Turtle.up-119"><span class="linenos">119</span></a><span class="sd">            MovementException: If the movement was not successful.</span>
+</span><span id="Turtle.up-120"><a href="#Turtle.up-120"><span class="linenos">120</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Turtle.up-121"><a href="#Turtle.up-121"><span class="linenos">121</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_move_step</span><span class="p">(</span><span class="n">Direction</span><span class="o">.</span><span class="n">UP</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -411,13 +418,13 @@
 
     </div>
     <a class="headerlink" href="#Turtle.down"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Turtle.down-115"><a href="#Turtle.down-115"><span class="linenos">115</span></a>    <span class="k">def</span> <span class="nf">down</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="Turtle.down-116"><a href="#Turtle.down-116"><span class="linenos">116</span></a>        <span class="sd">&quot;&quot;&quot;Move the turtle downwards.</span>
-</span><span id="Turtle.down-117"><a href="#Turtle.down-117"><span class="linenos">117</span></a>
-</span><span id="Turtle.down-118"><a href="#Turtle.down-118"><span class="linenos">118</span></a><span class="sd">        Raises:</span>
-</span><span id="Turtle.down-119"><a href="#Turtle.down-119"><span class="linenos">119</span></a><span class="sd">            MovementException: If the movement was not successful.</span>
-</span><span id="Turtle.down-120"><a href="#Turtle.down-120"><span class="linenos">120</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Turtle.down-121"><a href="#Turtle.down-121"><span class="linenos">121</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_move_step</span><span class="p">(</span><span class="n">Direction</span><span class="o">.</span><span class="n">DOWN</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Turtle.down-123"><a href="#Turtle.down-123"><span class="linenos">123</span></a>    <span class="k">def</span> <span class="nf">down</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="Turtle.down-124"><a href="#Turtle.down-124"><span class="linenos">124</span></a>        <span class="sd">&quot;&quot;&quot;Move the turtle downwards.</span>
+</span><span id="Turtle.down-125"><a href="#Turtle.down-125"><span class="linenos">125</span></a>
+</span><span id="Turtle.down-126"><a href="#Turtle.down-126"><span class="linenos">126</span></a><span class="sd">        Raises:</span>
+</span><span id="Turtle.down-127"><a href="#Turtle.down-127"><span class="linenos">127</span></a><span class="sd">            MovementException: If the movement was not successful.</span>
+</span><span id="Turtle.down-128"><a href="#Turtle.down-128"><span class="linenos">128</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Turtle.down-129"><a href="#Turtle.down-129"><span class="linenos">129</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_move_step</span><span class="p">(</span><span class="n">Direction</span><span class="o">.</span><span class="n">DOWN</span><span class="p">)</span>
 </span></pre></div>
 
 

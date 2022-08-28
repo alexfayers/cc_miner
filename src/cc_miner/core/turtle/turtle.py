@@ -1,7 +1,7 @@
 """Representation of a CC turtle."""
 
 from .exceptions import MovementException
-from .types import Bearing, Direction, Position
+from .types import Bearing, Direction, Location, Position
 
 
 class Turtle:
@@ -9,10 +9,10 @@ class Turtle:
 
     uid: int
     """The unique id of the turtle."""
-    name: str
+    name: str = ""
     """The name of the turtle."""
-    position: Position
-    """The current position of the turtle."""
+    _position: Position
+    """The (internal) current position of the turtle."""
 
     def __init__(self, uid: int) -> None:
         """Initialise a turtle representation.
@@ -20,6 +20,9 @@ class Turtle:
         Args:
             uid (int): The unique id of the `Turtle`.
         """
+        self._position = Position(
+            location=Location(x=0, y=0, z=0), bearing=Bearing.NORTH
+        )
         self.uid = uid
 
     def __repr__(self) -> str:
@@ -52,25 +55,23 @@ class Turtle:
             position_change = -1
             horizontal_movement = True
         elif direction == Direction.BACK:
-            position_change = -1
+            position_change = 1
             horizontal_movement = True
         elif direction == Direction.UP:
             position_change = 1
         elif direction == Direction.DOWN:
-            position_change -= 1
+            position_change = -1
         else:
             raise MovementException("Bad direction.")
 
         if horizontal_movement:
             # we're moving in the x or z plane
-            if self.position.bearing == Bearing.NORTH:
+            if self.position.bearing in [Bearing.NORTH, Bearing.SOUTH]:
                 self.position.location.z += position_change
-            elif self.position.bearing == Bearing.EAST:
-                self.position.location.x -= position_change
-            elif self.position.bearing == Bearing.SOUTH:
-                self.position.location.z -= position_change
-            elif self.position.bearing == Bearing.WEST:
+
+            elif self.position.bearing in [Bearing.WEST, Bearing.EAST]:
                 self.position.location.x += position_change
+
             else:
                 raise MovementException("Bad bearing.")
 
@@ -83,6 +84,16 @@ class Turtle:
                 self._command("up")
             elif direction == Direction.DOWN:
                 self._command("down")
+
+    @property
+    def position(self) -> Position:
+        """The current position of the `Turtle`."""
+        # TODO: use commands/gps to get position
+        return self._position
+
+    @position.setter
+    def position(self, value: Position) -> None:
+        self._position = value
 
     def forward(self) -> None:
         """Move the turtle forwards.
