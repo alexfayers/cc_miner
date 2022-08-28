@@ -1,7 +1,7 @@
 """Representation of a CC turtle."""
 
-from .types import Position, Bearing, Direction
 from .exceptions import MovementException
+from .types import Bearing, Direction, Position
 
 
 class Turtle:
@@ -14,10 +14,7 @@ class Turtle:
     position: Position
     """The current position of the turtle."""
 
-    def __init__(
-        self,
-        uid: int
-    ) -> None:
+    def __init__(self, uid: int) -> None:
         """Initialise a turtle representation.
 
         Args:

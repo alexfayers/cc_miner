@@ -1,3 +1,6 @@
+"""`Turtle` related exceptions."""
+
+
 class TurtleException(Exception):
     """An error to do with a `Turtle`."""
 

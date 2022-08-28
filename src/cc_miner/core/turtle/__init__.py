@@ -1,7 +1,6 @@
 """Representation of a CC turtle."""
 
-from .turtle import Turtle
 from . import exceptions, types
-
+from .turtle import Turtle
 
 __all__ = ["Turtle", "exceptions", "types"]
