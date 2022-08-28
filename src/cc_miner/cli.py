@@ -3,7 +3,7 @@
 import logging
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
 
-from . import BaseClass
+from .base import BaseClass
 
 
 def cli_main() -> None:

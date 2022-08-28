@@ -6,8 +6,6 @@ from typing import Any, Dict
 
 import yaml
 
-from .decorators import singleton
-
 logger = logging.getLogger(__name__)
 
 
@@ -94,7 +92,6 @@ class ConfigSection:
             )
 
 
-@singleton
 class Config:
     """An object representation of a `yaml` config file. Each config section can be accessed as an attribute."""
 
