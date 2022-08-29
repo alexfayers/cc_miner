@@ -6,7 +6,7 @@ from . import core
 from ._helper import ColoredFormatter as _ColoredFormatter
 from ._helper import SuccessLogger as _SuccessLogger
 
-__all__ = ["core"]
+__all__ = ["core", "web"]
 
 # set up logging for the package
 logging.setLoggerClass(_SuccessLogger)
