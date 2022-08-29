@@ -139,6 +139,9 @@ class Turtle:
         Raises:
             MovementException: If the movement was not successful.
         """
+        self.position.bearing = Bearing(
+            (self.position.bearing.value - 1) % len(Bearing)
+        )
         self._logger.info("Turning left")
         await self._command("return turtle.turnLeft()")
 
@@ -148,6 +151,9 @@ class Turtle:
         Raises:
             MovementException: If the movement was not successful.
         """
+        self.position.bearing = Bearing(
+            (self.position.bearing.value + 1) % len(Bearing)
+        )
         self._logger.info("Turning right")
         await self._command("return turtle.turnRight()")
 
@@ -221,28 +227,74 @@ class Turtle:
         await self.dig(direction)
         await self.move(direction)
 
+    async def move_to_location(self, location: Location) -> None:
+        """Move the turtle to a location.
+
+        Args:
+            location (Location): The location to move to.
+        """
+        x_diff = location.x - self.position.location.x
+        y_diff = location.y - self.position.location.y
+        z_diff = location.z - self.position.location.z
+
+        for _ in range(abs(y_diff)):
+            if y_diff > 0:
+                await self.dig_move(Direction.UP)
+            else:
+                await self.dig_move(Direction.DOWN)
+
+        # turn right until we're facing the right way
+        # TODO: optimise by calculating the difference between the bearings
+        if x_diff > 0:
+            while self.position.bearing != Bearing.EAST:
+                await self.turn_right()
+        else:
+            while self.position.bearing != Bearing.WEST:
+                await self.turn_right()
+
+        for _ in range(abs(x_diff)):
+            await self.dig_move(Direction.FORWARD)
+
+        if z_diff > 0:
+            while self.position.bearing != Bearing.SOUTH:
+                await self.turn_right()
+        else:
+            while self.position.bearing != Bearing.NORTH:
+                await self.turn_right()
+
+        for _ in range(abs(z_diff)):
+            await self.dig_move(Direction.FORWARD)
+
     async def start(self) -> None:
         """The main turtle process."""
-        xz_size = 4
-        y_size = 10
+        await self.move_to_location(
+            Location(
+                x=1,
+                y=4,
+                z=0,
+            )
+        )
 
-        for _ in range(y_size + 1):
-            for row_number in range(xz_size):
-                for _ in range(xz_size - 1):
-                    await self.dig_move(Direction.FORWARD)
-                # turn to next row
-                if row_number < (xz_size - 1):
-                    if row_number % 2 == 0:
-                        await self.turn_right()
-                        await self.dig_move(Direction.FORWARD)
-                        await self.turn_right()
-                    else:
-                        await self.turn_left()
-                        await self.dig_move(Direction.FORWARD)
-                        await self.turn_left()
-            if xz_size % 2 == 0:
-                await self.turn_right()
-            else:
-                await self.turn_left()
+        # xz_size = 4
+        # y_size = 10
 
-            await self.dig_move(Direction.DOWN)
+        # for _ in range(y_size + 1):
+        #     for row_number in range(xz_size):
+        #         for _ in range(xz_size - 1):
+        #             await self.dig_move(Direction.FORWARD)
+        #         # turn to next row
+        #         if row_number < (xz_size - 1):
+        #             if row_number % 2 == 0:
+        #                 await self.turn_right()
+        #                 await self.dig_move(Direction.FORWARD)
+        #                 await self.turn_right()
+        #             else:
+        #                 await self.turn_left()
+        #                 await self.dig_move(Direction.FORWARD)
+        #                 await self.turn_left()
+        #     if xz_size % 2 == 0:
+        #         await self.turn_right()
+        #     else:
+        #         await self.turn_left()
+
+        #     await self.dig_move(Direction.DOWN)
