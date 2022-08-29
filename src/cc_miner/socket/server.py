@@ -74,13 +74,14 @@ class SocketServer:
             except Exception as e:
                 logger.error("Error deregistering #%s: %s", _id, e)
 
-    async def handler(self, websocket: WebSocketServerProtocol) -> None:
+    async def handler(self, websocket: WebSocketServerProtocol, path: str) -> None:
         """The handler for the server.
 
         Handles the websocket connection before a connection is properly established.
 
         Args:
             websocket (WebSocketServerProtocol): The websocket connection.
+            path (str): The path to the websocket.
         """
         message = await websocket.recv()
         logger.debug("Got message: %s", message)
