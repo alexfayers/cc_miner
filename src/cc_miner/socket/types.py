@@ -1,8 +1,7 @@
 """Types for the `socket` module."""
-from typing import Any, Union
+from typing import Any
 
 from pydantic import BaseModel
-from typing_extensions import Literal
 
 
 class BaseMessage(BaseModel):
@@ -25,11 +24,11 @@ class ErrorMessage(BaseMessage):
     message: str
 
 
-class StatusMessage(BaseMessage):
+class CommandResponse(BaseMessage):
     """A message containing the status of the server."""
 
-    type = "status"
-    status: Union[Literal["OK"], Literal["ERROR"]]
+    type = "response"
+    status: bool
     data: Any = None
 
 

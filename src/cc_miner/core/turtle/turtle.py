@@ -1,12 +1,11 @@
 """Representation of a CC turtle."""
 
-import json
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, cast
 
 from websockets.server import WebSocketServerProtocol
 
-from ...socket.types import CommandMessage, StatusMessage
+from ...socket.types import CommandMessage, CommandResponse
 from .exceptions import CommandException, MovementException
 from .types import Bearing, Direction, Location, Position
 
@@ -45,7 +44,7 @@ class Turtle:
         """The string representation of the `Turtle` object."""
         return f"{self.__dict__}"
 
-    async def _command(self, command: str) -> Any:
+    async def _command(self, command: str) -> CommandResponse:
         """Send a command to the turtle.
 
         Args:
@@ -64,16 +63,12 @@ class Turtle:
         await self.socket.send(CommandMessage(command=command).json())
         res_raw = await self.socket.recv()
         self._logger.debug("Received response: %s", res_raw)
-        res = StatusMessage.parse_raw(res_raw)
-        if res.status == "OK":
+        res = CommandResponse.parse_raw(res_raw)
+        if res.status is True:
             self._logger.info("Command successful")
-            return res.data
-        elif res.status == "ERROR":
-            raise CommandException(f"Command returned with {res.status}: {res.data}")
         else:
-            raise CommandException(
-                f"Command returned with unknown status: {res.status}"
-            )
+            self._logger.error("Command failed")
+        return res
 
     async def _move_step(self, direction: Direction) -> None:
         """Move the turtle a step in a direction.
@@ -207,14 +202,17 @@ class Turtle:
             Dict: The block metadata
         """
         self._logger.info("Inspecting")
-        data: Dict[str, Any] = await self._command("return turtle.inspect()")
-        return data
+        res = await self._command("return turtle.inspect()")
+        if res.status:
+            return cast(Dict[str, Any], res.data)
+        else:
+            return {}
 
     async def start(self) -> None:
         """The main turtle process."""
         data = await self.inspect()
         logger.debug(data)
-        if data.get('tags', {}).get("minecraft:mineable/pickaxe", False) is True:
+        if data.get("tags", {}).get("minecraft:mineable/pickaxe", False) is True:
             logger.debug("Block is mineable")
             await self.dig()
 

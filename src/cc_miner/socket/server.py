@@ -9,7 +9,7 @@ from pydantic import ValidationError
 from websockets.server import WebSocketServerProtocol
 
 from ..core.turtle import Turtle
-from .types import DataMessage, ErrorMessage, RegisterMessage, StatusMessage
+from .types import CommandResponse, DataMessage, ErrorMessage, RegisterMessage
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +99,7 @@ class SocketServer:
         for potential_type in [
             DataMessage,
             ErrorMessage,
-            StatusMessage,
+            CommandResponse,
             RegisterMessage,
         ]:
             try:

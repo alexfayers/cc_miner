@@ -12,15 +12,15 @@ local register_payload = textutils.serialiseJSON(register_obj)
 
 --
 local success_obj = {
-    type = "status",
-    status = "OK"
+    type = "response",
+    status = true
 }
 local success_response = textutils.serialiseJSON(success_obj)
 
 --
 local error_obj = {
-    type = "status",
-    status = "ERROR"
+    type = "response",
+    status = false
 }
 local error_response = textutils.serialiseJSON(error_obj)
 --

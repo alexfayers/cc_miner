@@ -5,7 +5,7 @@ import pytest
 from websockets.server import WebSocketServerProtocol
 
 from cc_miner.core.turtle import Turtle
-from cc_miner.socket.types import StatusMessage
+from cc_miner.socket.types import CommandResponse
 
 
 class FakeSocket:
@@ -16,7 +16,7 @@ class FakeSocket:
 
     async def recv(self, *args: Any, **kwargs: Any) -> str:
         """Fake recv method."""
-        return StatusMessage(status="OK").json()
+        return CommandResponse(status="OK").json()
 
 
 @pytest.fixture(scope="function")
