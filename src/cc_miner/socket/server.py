@@ -122,4 +122,11 @@ class SocketServer:
         asyncio.get_event_loop().run_until_complete(
             websockets.serve(self.handler, self.host, self.port)  # type: ignore
         )
-        asyncio.get_event_loop().run_forever()
+
+        try:
+            asyncio.get_event_loop().run_forever()
+        except KeyboardInterrupt:
+            logger.info("Stopping server")
+            asyncio.get_event_loop().stop()
+            asyncio.get_event_loop().run_forever()
+            asyncio.get_event_loop().close()
