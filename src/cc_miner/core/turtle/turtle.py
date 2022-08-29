@@ -166,5 +166,11 @@ class Turtle:
 
     async def start(self) -> None:
         """The main turtle process."""
-        await self.forward()
-        await self.back()
+        routine = [self.forward, self.back, self.up, self.down]
+
+        for step in routine:
+            try:
+                await step()
+            except (MovementException, CommandException) as e:
+                self._logger.error(e)
+                break
