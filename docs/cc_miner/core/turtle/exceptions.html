@@ -48,6 +48,12 @@
                 </ul>
 
             </li>
+            <li>
+                    <a class="class" href="#HaltException">HaltException</a>
+                            <ul class="memberlist">
+                </ul>
+
+            </li>
     </ul>
 
 
@@ -84,6 +90,10 @@
 </span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a>
 </span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="k">class</span> <span class="nc">CommandException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 </span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>    <span class="sd">&quot;&quot;&quot;An error to do with a command that was sent to a `Turtle`.&quot;&quot;&quot;</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>
+</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a>
+</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="k">class</span> <span class="nc">HaltException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>    <span class="sd">&quot;&quot;&quot;Called when a `Turtle` halts itself (e.g. if there isn&#39;t enough fuel etc.).&quot;&quot;&quot;</span>
 </span></pre></div>
 
 
@@ -188,6 +198,41 @@
             <div><dt>builtins.BaseException</dt>
                                 <dd id="CommandException.with_traceback" class="function">with_traceback</dd>
                 <dd id="CommandException.args" class="variable">args</dd>
+
+            </div>
+                                </dl>
+                            </div>
+                </section>
+                <section id="HaltException">
+                            <input id="HaltException-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">HaltException</span><wbr>(<span class="base">builtins.Exception</span>):
+
+                <label class="view-source-button" for="HaltException-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#HaltException"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="HaltException-17"><a href="#HaltException-17"><span class="linenos">17</span></a><span class="k">class</span> <span class="nc">HaltException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+</span><span id="HaltException-18"><a href="#HaltException-18"><span class="linenos">18</span></a>    <span class="sd">&quot;&quot;&quot;Called when a `Turtle` halts itself (e.g. if there isn&#39;t enough fuel etc.).&quot;&quot;&quot;</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Called when a <code>Turtle</code> halts itself (e.g. if there isn't enough fuel etc.).</p>
+</div>
+
+
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt>builtins.Exception</dt>
+                                <dd id="HaltException.__init__" class="function">Exception</dd>
+
+            </div>
+            <div><dt>builtins.BaseException</dt>
+                                <dd id="HaltException.with_traceback" class="function">with_traceback</dd>
+                <dd id="HaltException.args" class="variable">args</dd>
 
             </div>
                                 </dl>
