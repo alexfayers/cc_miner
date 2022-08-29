@@ -201,20 +201,39 @@ class Turtle:
         else:
             return {}
 
+    async def dig_if_block(self, direction: Direction) -> None:
+        """Dig a block if there's something there."""
+        if direction == Direction.BACK:
+            raise MovementException("Can't dig backwards.")
+
+        data = await self.inspect(direction)
+        logger.debug(data)
+        if data.get("tags", {}).get("minecraft:mineable/pickaxe", False) is True:
+            logger.debug("Block is mineable")
+            await self.dig(direction)
+
+    async def dig_move(self, direction: Direction) -> None:
+        """Move and dig if there's a block in the way."""
+        await self.dig_if_block(direction)
+
+        await self.move(direction)
+
     async def step(self) -> None:
         """A single step of the mining process."""
-        check_directions = [Direction.FORWARD, Direction.UP]
+        check_directions = [Direction.DOWN, Direction.FORWARD]
 
         for direction in check_directions:
-            data = await self.inspect(direction)
-            logger.debug(data)
-            if data.get("tags", {}).get("minecraft:mineable/pickaxe", False) is True:
-                logger.debug("Block is mineable")
-                await self.dig(direction)
+            await self.dig_if_block(direction)
 
         await self.move(Direction.FORWARD)
 
     async def start(self) -> None:
         """The main turtle process."""
-        for _ in range(16):
+        xz_size = 4
+        for _ in range(xz_size):
+            for _ in range(xz_size):
+                await self.step()
+            # turn to next row
+            await self.turn_right()
             await self.step()
+            await self.turn_right()
