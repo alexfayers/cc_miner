@@ -122,11 +122,15 @@ class Turtle:
 
         if horizontal_movement:
             # we're moving in the x or z plane
-            if self.position.bearing in [Bearing.NORTH, Bearing.SOUTH]:
+            if self.position.bearing == Bearing.NORTH:
                 self.position.location.z += position_change
+            elif self.position.bearing == Bearing.SOUTH:
+                self.position.location.z -= position_change
 
-            elif self.position.bearing in [Bearing.WEST, Bearing.EAST]:
+            elif self.position.bearing == Bearing.WEST:
                 self.position.location.x += position_change
+            elif self.position.bearing == Bearing.EAST:
+                self.position.location.x -= position_change
 
             else:
                 raise MovementException("Bad bearing.")
