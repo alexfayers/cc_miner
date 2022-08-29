@@ -207,6 +207,18 @@ class Turtle:
         else:
             return {}
 
+    async def get_fuel(self) -> int:
+        """Get the amount of fuel remaining in the turtle.
+
+        Returns:
+            int: The amount of fuel left.
+        """
+        res = await self._command("return turtle.getFuelLevel()")
+        if res.status:
+            return cast(int, res.data)
+        else:
+            raise CommandException("Failed to get fuel level.")
+
     async def dig_if_block(self, direction: Direction) -> None:
         """Dig a block if there's something there."""
         if direction == Direction.BACK:
@@ -285,17 +297,9 @@ class Turtle:
 
     async def start(self) -> None:
         """The main turtle process."""
-        steps = await self.move_to_location(
-            Location(
-                x=1,
-                y=4,
-                z=0,
-            ),
-            cost_calculation=True,
-        )
+        fuel = await self.get_fuel()
 
-        print(steps)
-
+        print(fuel)
         # xz_size = 4
         # y_size = 10
 

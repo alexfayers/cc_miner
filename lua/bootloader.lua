@@ -40,17 +40,24 @@ if ws then
             local command_action = load(command_str)
             if command_action then
                 local result, extra = command_action()
-                if result then
-                    if extra then
+                if extra then -- result is likely true/false
+                    if result then
                         success_obj["data"] = extra
                         success_response = textutils.serialiseJSON(success_obj)
+
+                        ws.send(success_response)
+                    else
+                        error_obj["data"] = extra
+                        error_response = textutils.serialiseJSON(error_obj)
+                        
+                        ws.send(error_response)
                     end
-                    ws.send(success_response)
                 else
-                    -- TODO: send to server
-                    error_obj["data"] = extra
-                    error_response = textutils.serialiseJSON(error_obj)
-                    ws.send(error_response)
+                    -- nothing in the extra field, so just send the result as the data
+                    success_obj["data"] = result
+                    success_response = textutils.serialiseJSON(success_obj)
+
+                    ws.send(success_response)
                 end
             else
                 ws.send(error_response)
