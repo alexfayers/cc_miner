@@ -1,6 +1,5 @@
 """Representation of a CC turtle."""
 
-import json
 import logging
 from typing import Any, Dict
 
@@ -214,7 +213,7 @@ class Turtle:
         """The main turtle process."""
         data = await self.inspect()
         logger.debug(data)
-        if data.get('tags', {}).get("minecraft:mineable/pickaxe", False) is True:
+        if data.get("tags", {}).get("minecraft:mineable/pickaxe", False) is True:
             logger.debug("Block is mineable")
             await self.dig()
 
