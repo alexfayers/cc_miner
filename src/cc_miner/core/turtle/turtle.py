@@ -171,7 +171,7 @@ class Turtle:
             MovementException: If the movement was not successful.
         """
         self._logger.info("Turning left")
-        await self._command("return turtle.left()")
+        await self._command("return turtle.turnLeft()")
 
     async def turn_right(self) -> None:
         """Turn the turtle right.
@@ -180,7 +180,7 @@ class Turtle:
             MovementException: If the movement was not successful.
         """
         self._logger.info("Turning right")
-        await self._command("return turtle.right()")
+        await self._command("return turtle.turnRight()")
 
     async def dig(self) -> None:
         """Mine the block directly in front of the turtle.
