@@ -270,8 +270,14 @@
 </span><span id="Turtle-167"><a href="#Turtle-167"><span class="linenos">167</span></a>
 </span><span id="Turtle-168"><a href="#Turtle-168"><span class="linenos">168</span></a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="Turtle-169"><a href="#Turtle-169"><span class="linenos">169</span></a>        <span class="sd">&quot;&quot;&quot;The main turtle process.&quot;&quot;&quot;</span>
-</span><span id="Turtle-170"><a href="#Turtle-170"><span class="linenos">170</span></a>        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">()</span>
-</span><span id="Turtle-171"><a href="#Turtle-171"><span class="linenos">171</span></a>        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">back</span><span class="p">()</span>
+</span><span id="Turtle-170"><a href="#Turtle-170"><span class="linenos">170</span></a>        <span class="n">routine</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">back</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">up</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">down</span><span class="p">]</span>
+</span><span id="Turtle-171"><a href="#Turtle-171"><span class="linenos">171</span></a>
+</span><span id="Turtle-172"><a href="#Turtle-172"><span class="linenos">172</span></a>        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">routine</span><span class="p">:</span>
+</span><span id="Turtle-173"><a href="#Turtle-173"><span class="linenos">173</span></a>            <span class="k">try</span><span class="p">:</span>
+</span><span id="Turtle-174"><a href="#Turtle-174"><span class="linenos">174</span></a>                <span class="k">await</span> <span class="n">step</span><span class="p">()</span>
+</span><span id="Turtle-175"><a href="#Turtle-175"><span class="linenos">175</span></a>            <span class="k">except</span> <span class="p">(</span><span class="n">MovementException</span><span class="p">,</span> <span class="n">CommandException</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span id="Turtle-176"><a href="#Turtle-176"><span class="linenos">176</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</span><span id="Turtle-177"><a href="#Turtle-177"><span class="linenos">177</span></a>                <span class="k">break</span>
 </span></pre></div>
 
 
@@ -514,8 +520,14 @@
     <a class="headerlink" href="#Turtle.start"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="Turtle.start-168"><a href="#Turtle.start-168"><span class="linenos">168</span></a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 </span><span id="Turtle.start-169"><a href="#Turtle.start-169"><span class="linenos">169</span></a>        <span class="sd">&quot;&quot;&quot;The main turtle process.&quot;&quot;&quot;</span>
-</span><span id="Turtle.start-170"><a href="#Turtle.start-170"><span class="linenos">170</span></a>        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">()</span>
-</span><span id="Turtle.start-171"><a href="#Turtle.start-171"><span class="linenos">171</span></a>        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">back</span><span class="p">()</span>
+</span><span id="Turtle.start-170"><a href="#Turtle.start-170"><span class="linenos">170</span></a>        <span class="n">routine</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">back</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">up</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">down</span><span class="p">]</span>
+</span><span id="Turtle.start-171"><a href="#Turtle.start-171"><span class="linenos">171</span></a>
+</span><span id="Turtle.start-172"><a href="#Turtle.start-172"><span class="linenos">172</span></a>        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">routine</span><span class="p">:</span>
+</span><span id="Turtle.start-173"><a href="#Turtle.start-173"><span class="linenos">173</span></a>            <span class="k">try</span><span class="p">:</span>
+</span><span id="Turtle.start-174"><a href="#Turtle.start-174"><span class="linenos">174</span></a>                <span class="k">await</span> <span class="n">step</span><span class="p">()</span>
+</span><span id="Turtle.start-175"><a href="#Turtle.start-175"><span class="linenos">175</span></a>            <span class="k">except</span> <span class="p">(</span><span class="n">MovementException</span><span class="p">,</span> <span class="n">CommandException</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span id="Turtle.start-176"><a href="#Turtle.start-176"><span class="linenos">176</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</span><span id="Turtle.start-177"><a href="#Turtle.start-177"><span class="linenos">177</span></a>                <span class="k">break</span>
 </span></pre></div>
 
 
