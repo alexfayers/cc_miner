@@ -230,10 +230,15 @@ class Turtle:
     async def start(self) -> None:
         """The main turtle process."""
         xz_size = 4
-        for _ in range(xz_size):
+        for row_number in range(xz_size):
             for _ in range(xz_size):
                 await self.step()
             # turn to next row
-            await self.turn_right()
-            await self.step()
-            await self.turn_right()
+            if row_number % 2 == 0:
+                await self.turn_right()
+                await self.step()
+                await self.turn_right()
+            else:
+                await self.turn_left()
+                await self.step()
+                await self.turn_left()
