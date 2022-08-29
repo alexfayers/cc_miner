@@ -1,16 +1,17 @@
 """Websocket server class."""
 import asyncio
 import json
-import websockets
 import logging
-from websockets.server import WebSocketServerProtocol
 
+import websockets
+from websockets.server import WebSocketServerProtocol
 
 logger = logging.getLogger(__name__)
 
 
 class SocketServer:
     """A websocket server which communicates with turtles."""
+
     def __init__(self, host: str, port: int) -> None:
         """Initialise the server.
 
