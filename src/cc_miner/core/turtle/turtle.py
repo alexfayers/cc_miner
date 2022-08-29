@@ -52,6 +52,9 @@ class Turtle:
         Raises:
             CommandException: Raised if the command fails.
         """
+        if "return" not in command:
+            raise CommandException("Command must return a value.")
+
         self._logger.debug("Sending command: %s", command)
         await self.socket.send(CommandMessage(command=command).json())
         res_raw = await self.socket.recv()
@@ -103,17 +106,17 @@ class Turtle:
                 raise MovementException("Bad bearing.")
 
             if direction == Direction.FORWARD:
-                await self._command("turtle.forward()")
+                await self._command("return turtle.forward()")
             elif direction == Direction.BACK:
-                await self._command("turtle.back()")
+                await self._command("return turtle.back()")
         else:
             # we're moving in the y plane
             self.position.location.y += position_change
 
             if direction == Direction.UP:
-                await self._command("turtle.up()")
+                await self._command("return turtle.up()")
             elif direction == Direction.DOWN:
-                await self._command("turtle.down()")
+                await self._command("return turtle.down()")
 
     @property
     def position(self) -> Position:
