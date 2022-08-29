@@ -81,12 +81,12 @@ class Turtle:
 
         if steps_to_get_back >= fuel:
             logger.warning(
-                "Not enough fuel to get back - stopping current process and returning!"
+                "Won't have enough fuel to get back if we continue - stopping current process and returning!"
             )
             self._check_fuel = False
             await self.move_to_location(Location(x=0, y=0, z=0))
             logger.warning(f"Stopped at {self.position.location}")
-            raise HaltException("Not enough fuel to get back.")
+            raise HaltException("Returned before ran out of fuel.")
 
     async def move(self, direction: Direction) -> None:
         """Move the turtle a step in a direction.
@@ -324,8 +324,15 @@ class Turtle:
 
     async def start(self) -> None:
         """The main turtle process."""
-        xz_size = 4
-        y_size = 10
+        xz_size = 8
+        y_size = 40
+        prerun_fuel_check: bool = False
+
+        if prerun_fuel_check:
+            required_fuel: int = (xz_size * xz_size * y_size + xz_size * 2 + y_size) // 80 + 1
+            current_fuel = await self.get_fuel()
+            if current_fuel < required_fuel:
+                raise HaltException(f"Not enough fuel to complete trip. Need {required_fuel - current_fuel} more.")
 
         for _ in range(y_size + 1):
             for row_number in range(xz_size):
