@@ -234,19 +234,22 @@ class Turtle:
     async def start(self) -> None:
         """The main turtle process."""
         xz_size = 4
-        for row_number in range(xz_size):
-            for _ in range(xz_size):
-                await self.step()
-            # turn to next row
-            if row_number < xz_size - 1:
-                if row_number % 2 == 0:
-                    await self.turn_right()
+        y_size = 10
+
+        for _ in range(y_size):
+            for row_number in range(xz_size):
+                for _ in range(xz_size):
                     await self.step()
-                    await self.turn_right()
+                # turn to next row
+                if row_number < xz_size - 1:
+                    if row_number % 2 == 0:
+                        await self.turn_right()
+                        await self.step()
+                        await self.turn_right()
+                    else:
+                        await self.turn_left()
+                        await self.step()
+                        await self.turn_left()
                 else:
-                    await self.turn_left()
-                    await self.step()
-                    await self.turn_left()
-            else:
-                await self.turn_right()
-                await self.dig_move(Direction.DOWN)
+                    await self.turn_right()
+                    await self.dig_move(Direction.DOWN)
