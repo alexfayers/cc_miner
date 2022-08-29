@@ -6,7 +6,7 @@ from typing import Any, Dict, cast
 from websockets.server import WebSocketServerProtocol
 
 from ...socket.types import CommandMessage, CommandResponse
-from .exceptions import CommandException, MovementException
+from .exceptions import CommandException, HaltException, MovementException
 from .types import Bearing, Direction, Location, Position
 
 logger = logging.getLogger(__name__)
@@ -236,6 +236,19 @@ class Turtle:
 
     async def dig_move(self, direction: Direction) -> None:
         """Move and dig if there's a block in the way."""
+        fuel = await self.get_fuel()
+        steps_to_get_back = await self.move_to_location(
+            Location(x=0, y=0, z=0), cost_calculation=True
+        )
+
+        if steps_to_get_back >= fuel:
+            logger.warning(
+                "Not enough fuel to get back - stopping current process and returning!"
+            )
+            await self.move_to_location(Location(x=0, y=0, z=0))
+            logger.warning(f"Stopped at {self.position.location}")
+            raise HaltException("Not enough fuel to get back.")
+
         await self.dig(direction)
         await self.move(direction)
 
@@ -297,29 +310,26 @@ class Turtle:
 
     async def start(self) -> None:
         """The main turtle process."""
-        fuel = await self.get_fuel()
+        xz_size = 4
+        y_size = 10
 
-        print(fuel)
-        # xz_size = 4
-        # y_size = 10
+        for _ in range(y_size + 1):
+            for row_number in range(xz_size):
+                for _ in range(xz_size - 1):
+                    await self.dig_move(Direction.FORWARD)
+                # turn to next row
+                if row_number < (xz_size - 1):
+                    if row_number % 2 == 0:
+                        await self.turn_right()
+                        await self.dig_move(Direction.FORWARD)
+                        await self.turn_right()
+                    else:
+                        await self.turn_left()
+                        await self.dig_move(Direction.FORWARD)
+                        await self.turn_left()
+            if xz_size % 2 == 0:
+                await self.turn_right()
+            else:
+                await self.turn_left()
 
-        # for _ in range(y_size + 1):
-        #     for row_number in range(xz_size):
-        #         for _ in range(xz_size - 1):
-        #             await self.dig_move(Direction.FORWARD)
-        #         # turn to next row
-        #         if row_number < (xz_size - 1):
-        #             if row_number % 2 == 0:
-        #                 await self.turn_right()
-        #                 await self.dig_move(Direction.FORWARD)
-        #                 await self.turn_right()
-        #             else:
-        #                 await self.turn_left()
-        #                 await self.dig_move(Direction.FORWARD)
-        #                 await self.turn_left()
-        #     if xz_size % 2 == 0:
-        #         await self.turn_right()
-        #     else:
-        #         await self.turn_left()
-
-        #     await self.dig_move(Direction.DOWN)
+            await self.dig_move(Direction.DOWN)
