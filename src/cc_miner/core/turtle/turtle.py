@@ -214,7 +214,7 @@ class Turtle:
         """The main turtle process."""
         data = await self.inspect()
         logger.debug(data)
-        if data.get("minecraft:mineable/pickaxe") is True:
+        if data.get('tags', {}).get("minecraft:mineable/pickaxe", False) is True:
             logger.debug("Block is mineable")
             await self.dig()
 
