@@ -1,5 +1,6 @@
 """Representation of a CC turtle."""
 
+import json
 import logging
 from typing import Any, Dict
 
@@ -8,7 +9,6 @@ from websockets.server import WebSocketServerProtocol
 from ...socket.types import CommandMessage, StatusMessage
 from .exceptions import CommandException, MovementException
 from .types import Bearing, Direction, Location, Position
-import json
 
 logger = logging.getLogger(__name__)
 
