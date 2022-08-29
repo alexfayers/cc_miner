@@ -234,7 +234,7 @@ class Turtle:
 
         for _ in range(y_size):
             for row_number in range(xz_size):
-                for _ in range(xz_size):
+                for _ in range(xz_size - 1):
                     await self.step()
                 # turn to next row
                 if row_number < (xz_size - 1):
