@@ -227,53 +227,74 @@ class Turtle:
         await self.dig(direction)
         await self.move(direction)
 
-    async def move_to_location(self, location: Location) -> None:
+    async def move_to_location(
+        self, location: Location, cost_calculation: bool = False
+    ) -> int:
         """Move the turtle to a location.
 
         Args:
             location (Location): The location to move to.
+            cost_calculation (bool): If true, don't actually move.
+
+        Returns:
+            int: The number of blocks moved/that will be moved.
         """
+        movement_cost: int = 0
+
         x_diff = location.x - self.position.location.x
         y_diff = location.y - self.position.location.y
         z_diff = location.z - self.position.location.z
 
         for _ in range(abs(y_diff)):
-            if y_diff > 0:
-                await self.dig_move(Direction.UP)
-            else:
-                await self.dig_move(Direction.DOWN)
+            if not cost_calculation:
+                if y_diff > 0:
+                    await self.dig_move(Direction.UP)
+                else:
+                    await self.dig_move(Direction.DOWN)
+            movement_cost += 1
 
         # turn right until we're facing the right way
         # TODO: optimise by calculating the difference between the bearings
-        if x_diff > 0:
-            while self.position.bearing != Bearing.EAST:
-                await self.turn_right()
-        else:
-            while self.position.bearing != Bearing.WEST:
-                await self.turn_right()
+        if not cost_calculation:
+            if x_diff > 0:
+                while self.position.bearing != Bearing.EAST:
+                    await self.turn_right()
+            else:
+                while self.position.bearing != Bearing.WEST:
+                    await self.turn_right()
 
         for _ in range(abs(x_diff)):
-            await self.dig_move(Direction.FORWARD)
+            if not cost_calculation:
+                await self.dig_move(Direction.FORWARD)
+            movement_cost += 1
 
-        if z_diff > 0:
-            while self.position.bearing != Bearing.SOUTH:
-                await self.turn_right()
-        else:
-            while self.position.bearing != Bearing.NORTH:
-                await self.turn_right()
+        if not cost_calculation:
+            if z_diff > 0:
+                while self.position.bearing != Bearing.SOUTH:
+                    await self.turn_right()
+            else:
+                while self.position.bearing != Bearing.NORTH:
+                    await self.turn_right()
 
         for _ in range(abs(z_diff)):
-            await self.dig_move(Direction.FORWARD)
+            if not cost_calculation:
+                await self.dig_move(Direction.FORWARD)
+            movement_cost += 1
+
+        return movement_cost
 
     async def start(self) -> None:
         """The main turtle process."""
-        await self.move_to_location(
+        steps = await self.move_to_location(
             Location(
                 x=1,
                 y=4,
                 z=0,
-            )
+            ),
+            cost_calculation=True,
         )
+
+        print(steps)
 
         # xz_size = 4
         # y_size = 10
