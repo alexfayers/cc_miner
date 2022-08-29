@@ -237,13 +237,14 @@ class Turtle:
                 for _ in range(xz_size):
                     await self.step()
                 # turn to next row
-                if row_number % 2 == 0:
-                    await self.turn_right()
-                    await self.step()
-                    await self.turn_right()
-                else:
-                    await self.turn_left()
-                    await self.step()
-                    await self.turn_left()
+                if row_number < (xz_size - 1):
+                    if row_number % 2 == 0:
+                        await self.turn_right()
+                        await self.step()
+                        await self.turn_right()
+                    else:
+                        await self.turn_left()
+                        await self.step()
+                        await self.turn_left()
             await self.turn_right()
             await self.dig_move(Direction.DOWN)
