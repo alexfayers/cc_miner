@@ -80,12 +80,12 @@ class Turtle:
         )
 
         if steps_to_get_back >= fuel:
-            logger.warning(
+            self._logger.warning(
                 "Won't have enough fuel to get back if we continue - stopping current process and returning!"
             )
             self._check_fuel = False
             await self.move_to_location(Location(x=0, y=0, z=0))
-            logger.warning(f"Stopped at {self.position.location}")
+            self._logger.warning(f"Stopped at {self.position.location}")
             raise HaltException("Returned before ran out of fuel.")
 
     async def move(self, direction: Direction) -> None:
@@ -148,7 +148,7 @@ class Turtle:
             elif direction == Direction.DOWN:
                 await self._command("return turtle.down()")
 
-        logger.debug("New position: %s", self.position)
+        self._logger.debug("New position: %s", self.position)
 
     @property
     def position(self) -> Position:
@@ -252,13 +252,13 @@ class Turtle:
             raise MovementException("Can't dig backwards.")
 
         data = await self.inspect(direction)
-        logger.debug(data)
+        self._logger.debug(data)
         tags = data.get("tags", {})
         if any(
             tags.get(item, False) is True
             for item in ["minecraft:mineable/pickaxe", "minecraft:mineable/shovel"]
         ):
-            logger.debug("Block is mineable")
+            self._logger.debug("Block is mineable")
             await self.dig(direction)
 
     async def dig_move(self, direction: Direction) -> None:
@@ -319,6 +319,10 @@ class Turtle:
             if not cost_calculation:
                 await self.dig_move(Direction.FORWARD)
             movement_cost += 1
+
+        if not cost_calculation:
+            while self.position.bearing != Bearing.NORTH:
+                await self.turn_right()
 
         return movement_cost
 
