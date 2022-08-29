@@ -208,7 +208,11 @@ class Turtle:
 
         data = await self.inspect(direction)
         logger.debug(data)
-        if data.get("tags", {}).get("minecraft:mineable/pickaxe", False) is True:
+        tags = data.get("tags", {})
+        if any(
+            tags.get(item, False) is True
+            for item in ["minecraft:mineable/pickaxe", "minecraft:mineable/shovel"]
+        ):
             logger.debug("Block is mineable")
             await self.dig(direction)
 
