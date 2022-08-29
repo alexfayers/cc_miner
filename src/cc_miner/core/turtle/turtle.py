@@ -67,8 +67,7 @@ class Turtle:
         res = StatusMessage.parse_raw(res_raw)
         if res.status == "OK":
             self._logger.info("Command successful")
-            parsed_data = json.loads(res.data)
-            return parsed_data
+            return res.data
         elif res.status == "ERROR":
             raise CommandException(f"Command returned with {res.status}: {res.data}")
         else:
