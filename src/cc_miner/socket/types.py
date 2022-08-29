@@ -1,5 +1,5 @@
 """Types for the `socket` module."""
-from typing import Union
+from typing import Any, Union
 
 from pydantic import BaseModel
 from typing_extensions import Literal
@@ -30,6 +30,7 @@ class StatusMessage(BaseMessage):
 
     type = "status"
     status: Union[Literal["OK"], Literal["ERROR"]]
+    data: Any = None
 
 
 class RegisterMessage(BaseMessage):

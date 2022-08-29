@@ -39,12 +39,13 @@ if ws then
             print(command_str)
             local command_action = load(command_str)
             if command_action then
-                local result, error = command_action()
+                local result, extra = command_action()
                 if result then
+                    success_response.data = textutils.serialiseJSON(extra)
                     ws.send(success_response)
                 else
                     -- TODO: send to server
-                    print(error)
+                    error_response.data = extra
                     ws.send(error_response)
                 end
             else

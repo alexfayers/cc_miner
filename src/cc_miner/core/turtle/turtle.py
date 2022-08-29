@@ -1,6 +1,7 @@
 """Representation of a CC turtle."""
 
 import logging
+from typing import Any
 
 from websockets.server import WebSocketServerProtocol
 
@@ -43,7 +44,7 @@ class Turtle:
         """The string representation of the `Turtle` object."""
         return f"{self.__dict__}"
 
-    async def _command(self, command: str) -> None:
+    async def _command(self, command: str) -> Any:
         """Send a command to the turtle.
 
         Args:
@@ -51,6 +52,9 @@ class Turtle:
 
         Raises:
             CommandException: Raised if the command fails.
+
+        Returns:
+            Any: The result of the command. Type depends on what the command returns - check the docs!.
         """
         if "return" not in command:
             raise CommandException("Command must return a value.")
@@ -62,8 +66,9 @@ class Turtle:
         res = StatusMessage.parse_raw(res_raw)
         if res.status == "OK":
             self._logger.info("Command successful")
+            return res.data
         elif res.status == "ERROR":
-            raise CommandException(f"Command returned with {res.status}")
+            raise CommandException(f"Command returned with {res.status}: {res.data}")
         else:
             raise CommandException(
                 f"Command returned with unknown status: {res.status}"
@@ -191,15 +196,26 @@ class Turtle:
         self._logger.info("Digging")
         await self._command("return turtle.dig()")
 
+    async def inspect(self) -> None:
+        """Inspect the block directly in front of the turtle.
+
+        Raises:
+            MovementException: If the movement was not successful.
+        """
+        self._logger.info("Inspecting")
+        data = await self._command("return turtle.inspect()")
+        print(data)
+
     async def start(self) -> None:
         """The main turtle process."""
         routine = [
-            self.forward,
-            self.back,
+            # self.forward,
+            # self.back,
             self.up,
             self.down,
             self.turn_right,
             self.turn_left,
+            self.inspect,
         ]
 
         for step in routine:
