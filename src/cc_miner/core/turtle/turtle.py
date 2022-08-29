@@ -25,6 +25,8 @@ class Turtle:
     """The (internal) current position of the turtle."""
     _logger: logging.Logger
     """The logger for the class."""
+    _check_fuel = True
+    """If true, will check for fuel requirements before moving."""
 
     def __init__(self, uid: int, socket: WebSocketServerProtocol) -> None:
         """Initialise a turtle representation.
@@ -236,18 +238,20 @@ class Turtle:
 
     async def dig_move(self, direction: Direction) -> None:
         """Move and dig if there's a block in the way."""
-        fuel = await self.get_fuel()
-        steps_to_get_back = await self.move_to_location(
-            Location(x=0, y=0, z=0), cost_calculation=True
-        )
-
-        if steps_to_get_back >= fuel:
-            logger.warning(
-                "Not enough fuel to get back - stopping current process and returning!"
+        if self._check_fuel:
+            fuel = await self.get_fuel()
+            steps_to_get_back = await self.move_to_location(
+                Location(x=0, y=0, z=0), cost_calculation=True
             )
-            await self.move_to_location(Location(x=0, y=0, z=0))
-            logger.warning(f"Stopped at {self.position.location}")
-            raise HaltException("Not enough fuel to get back.")
+
+            if steps_to_get_back >= fuel:
+                logger.warning(
+                    "Not enough fuel to get back - stopping current process and returning!"
+                )
+                self._check_fuel = False
+                await self.move_to_location(Location(x=0, y=0, z=0))
+                logger.warning(f"Stopped at {self.position.location}")
+                raise HaltException("Not enough fuel to get back.")
 
         await self.dig(direction)
         await self.move(direction)
