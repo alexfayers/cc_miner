@@ -3,6 +3,7 @@
 import logging
 
 from ._helper import Config
+from .web.app import create_app
 
 
 class BaseClass:
@@ -23,3 +24,8 @@ class BaseClass:
             package_logger.setLevel(logging.DEBUG)
         else:
             package_logger.setLevel(logging.INFO)
+
+    def start_server(self) -> None:
+        """Start the webserver in development mode."""
+        app = create_app()
+        app.run("0.0.0.0", 5000, debug=True)
