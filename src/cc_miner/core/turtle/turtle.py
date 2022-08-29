@@ -1,7 +1,14 @@
 """Representation of a CC turtle."""
 
-from .exceptions import MovementException
+import logging
+
+from websockets.server import WebSocketServerProtocol
+
+from ...socket.types import CommandMessage, StatusMessage
+from .exceptions import CommandException, MovementException
 from .types import Bearing, Direction, Location, Position
+
+logger = logging.getLogger(__name__)
 
 
 class Turtle:
@@ -9,27 +16,34 @@ class Turtle:
 
     uid: int
     """The unique id of the turtle."""
+    socket: WebSocketServerProtocol
+    """The websocket connection to the turtle."""
     name: str = ""
     """The name of the turtle."""
     _position: Position
     """The (internal) current position of the turtle."""
+    _logger: logging.Logger
+    """The logger for the class."""
 
-    def __init__(self, uid: int) -> None:
+    def __init__(self, uid: int, socket: WebSocketServerProtocol) -> None:
         """Initialise a turtle representation.
 
         Args:
             uid (int): The unique id of the `Turtle`.
+            socket (WebSocketServerProtocol): The websocket connection to the turtle.
         """
         self._position = Position(
             location=Location(x=0, y=0, z=0), bearing=Bearing.NORTH
         )
         self.uid = uid
+        self.socket = socket
+        self._logger = logging.getLogger(f"{__name__}.{self.uid}")
 
     def __repr__(self) -> str:
         """The string representation of the `Turtle` object."""
         return f"{self.__dict__}"
 
-    def _command(self, command: str) -> None:
+    async def _command(self, command: str) -> None:
         """Send a command to the turtle.
 
         Args:
@@ -38,8 +52,21 @@ class Turtle:
         Raises:
             CommandException: Raised if the command fails.
         """
+        self._logger.debug("Sending command: %s", command)
+        await self.socket.send(CommandMessage(command=command).json())
+        res_raw = await self.socket.recv()
+        self._logger.debug("Received response: %s", res_raw)
+        res = StatusMessage.parse_raw(res_raw)
+        if res.status == "OK":
+            self._logger.info("Command successful")
+        elif res.status == "ERROR":
+            raise CommandException(f"Command returned with {res.status}")
+        else:
+            raise CommandException(
+                f"Command returned with unknown status: {res.status}"
+            )
 
-    def _move_step(self, direction: Direction) -> None:
+    async def _move_step(self, direction: Direction) -> None:
         """Move the turtle a step in a direction.
 
         Args:
@@ -75,15 +102,18 @@ class Turtle:
             else:
                 raise MovementException("Bad bearing.")
 
-            self._command("forward")
+            if direction == Direction.FORWARD:
+                await self._command("forward")
+            elif direction == Direction.BACK:
+                await self._command("back")
         else:
             # we're moving in the y plane
             self.position.location.y += position_change
 
             if direction == Direction.UP:
-                self._command("up")
+                await self._command("up")
             elif direction == Direction.DOWN:
-                self._command("down")
+                await self._command("down")
 
     @property
     def position(self) -> Position:
@@ -95,34 +125,43 @@ class Turtle:
     def position(self, value: Position) -> None:
         self._position = value
 
-    def forward(self) -> None:
+    async def forward(self) -> None:
         """Move the turtle forwards.
 
         Raises:
             MovementException: If the movement was not successful.
         """
-        self._move_step(Direction.FORWARD)
+        self._logger.info("Moving forward")
+        await self._move_step(Direction.FORWARD)
 
-    def back(self) -> None:
+    async def back(self) -> None:
         """Move the turtle backwards.
 
         Raises:
             MovementException: If the movement was not successful.
         """
-        self._move_step(Direction.BACK)
+        self._logger.info("Moving back")
+        await self._move_step(Direction.BACK)
 
-    def up(self) -> None:
+    async def up(self) -> None:
         """Move the turtle upwards.
 
         Raises:
             MovementException: If the movement was not successful.
         """
-        self._move_step(Direction.UP)
+        self._logger.info("Moving up")
+        await self._move_step(Direction.UP)
 
-    def down(self) -> None:
+    async def down(self) -> None:
         """Move the turtle downwards.
 
         Raises:
             MovementException: If the movement was not successful.
         """
-        self._move_step(Direction.DOWN)
+        self._logger.info("Moving down")
+        await self._move_step(Direction.DOWN)
+
+    async def start(self) -> None:
+        """The main turtle process."""
+        await self.forward()
+        await self.back()

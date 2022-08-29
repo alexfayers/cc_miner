@@ -2,18 +2,22 @@
 import asyncio
 import json
 import logging
+from typing import Set
 
 import websockets
 from pydantic import ValidationError
 from websockets.server import WebSocketServerProtocol
 
-from .types import DataMessage, ErrorMessage, StatusMessage
+from ..core.turtle import Turtle
+from .types import DataMessage, ErrorMessage, RegisterMessage, StatusMessage
 
 logger = logging.getLogger(__name__)
 
 
 class SocketServer:
     """A websocket server which communicates with turtles."""
+
+    clients: Set[Turtle] = set()
 
     def __init__(self, host: str, port: int) -> None:
         """Initialise the server.
@@ -48,8 +52,32 @@ class SocketServer:
         event = DataMessage(message=message)
         await websocket.send(event.json())
 
+    async def register(self, websocket: WebSocketServerProtocol, _id: int) -> None:
+        """Register a websocket connection.
+
+        Args:
+            websocket (WebSocketServerProtocol): The websocket connection.
+            _id (int): The unique id of the turtle.
+        """
+        turtle = Turtle(_id, websocket)
+        self.clients.add(turtle)
+        await self.send(websocket, "Registered")
+        try:
+            # main loop
+            logger.info("Starting main loop for #%s", _id)
+            await turtle.start()
+        finally:
+            logger.info("Stopping main loop for #%s", _id)
+            self.clients.remove(turtle)
+            try:
+                await self.send(websocket, "Deregistered")
+            except Exception as e:
+                logger.error("Error deregistering #%s: %s", _id, e)
+
     async def handler(self, websocket: WebSocketServerProtocol) -> None:
         """The handler for the server.
+
+        Handles the websocket connection before a connection is properly established.
 
         Args:
             websocket (WebSocketServerProtocol): The websocket connection.
@@ -67,7 +95,12 @@ class SocketServer:
             logger.error("No type in message: %s", message)
             raise await self.error(websocket, "'type' key not in message")
 
-        for potential_type in [DataMessage, ErrorMessage, StatusMessage]:
+        for potential_type in [
+            DataMessage,
+            ErrorMessage,
+            StatusMessage,
+            RegisterMessage,
+        ]:
             try:
                 event = potential_type.parse_obj(event)
             except ValidationError:
@@ -77,16 +110,11 @@ class SocketServer:
         else:
             raise await self.error(websocket, f"Could not parse: {event}")
 
-        if type(event) is DataMessage:
-            data = event.message
-            await self.send(websocket, f"Got message: {data}")
-        elif type(event) is ErrorMessage:
-            data = event.message
-            await self.send(websocket, f"Got error: {data}")
-        elif type(event) is StatusMessage:
-            # handle status message
-            logger.info("Got status message: %s", event.message)
-            await self.send(websocket, f"Got status message: {event.message}")
+        if type(event) is RegisterMessage:
+            logger.info("Got new registration from #%s", event.id)
+            await self.register(websocket, event.id)
+        else:
+            raise await self.error(websocket, f"Unexpected event type: {event.json()}")
 
     def start(self) -> None:
         """Start the server."""
