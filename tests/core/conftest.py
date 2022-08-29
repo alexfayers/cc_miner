@@ -16,7 +16,7 @@ class FakeSocket:
 
     async def recv(self, *args: Any, **kwargs: Any) -> str:
         """Fake recv method."""
-        return CommandResponse(status="OK").json()
+        return CommandResponse(status=True).json()
 
 
 @pytest.fixture(scope="function")
