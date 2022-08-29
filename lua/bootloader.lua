@@ -42,12 +42,12 @@ if ws then
                 local result, extra = command_action()
                 if result then
                     if extra then
-                        success_response.data = textutils.serialiseJSON(extra)
+                        success_response["data"] = textutils.serialiseJSON(extra)
                     end
                     ws.send(success_response)
                 else
                     -- TODO: send to server
-                    error_response.data = extra
+                    error_response["data"] = extra
                     ws.send(error_response)
                 end
             else
