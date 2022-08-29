@@ -8,6 +8,7 @@ from websockets.server import WebSocketServerProtocol
 from ...socket.types import CommandMessage, StatusMessage
 from .exceptions import CommandException, MovementException
 from .types import Bearing, Direction, Location, Position
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +67,8 @@ class Turtle:
         res = StatusMessage.parse_raw(res_raw)
         if res.status == "OK":
             self._logger.info("Command successful")
-            return res.data
+            parsed_data = json.loads(res.data)
+            return parsed_data
         elif res.status == "ERROR":
             raise CommandException(f"Command returned with {res.status}: {res.data}")
         else:
