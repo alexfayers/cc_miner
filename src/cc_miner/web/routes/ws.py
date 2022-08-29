@@ -1,9 +1,10 @@
 """Websocket routes."""
 from simple_websocket import Server
+
 from .. import sock
 
 
-@sock.route('/echo')
+@sock.route("/echo")
 def echo(ws: Server) -> None:
     """Handle echo websocket.
 

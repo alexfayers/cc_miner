@@ -1,9 +1,11 @@
 """App initialisation."""
 from typing import Optional
+
 from flask import Flask
+
 from . import sock
-from .routes import main
 from .routes import ws  # noqa
+from .routes import main
 
 
 def create_app(config_filename: Optional[str] = None) -> Flask:

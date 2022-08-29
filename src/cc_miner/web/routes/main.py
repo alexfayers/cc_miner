@@ -1,12 +1,12 @@
 """The main control page."""
 import flask
-from flask import render_template, Blueprint
+from flask import Blueprint, render_template
 
 app = flask.current_app
-main = Blueprint('main', __name__)
+main = Blueprint("main", __name__)
 
 
-@main.route('/')
+@main.route("/")
 def index() -> str:
     """Render the main control page."""
-    return render_template('index.html')
+    return render_template("index.html")
