@@ -164,9 +164,43 @@ class Turtle:
         self._logger.info("Moving down")
         await self._move_step(Direction.DOWN)
 
+    async def turn_left(self) -> None:
+        """Turn the turtle left.
+
+        Raises:
+            MovementException: If the movement was not successful.
+        """
+        self._logger.info("Turning left")
+        await self._command("return turtle.left()")
+
+    async def turn_right(self) -> None:
+        """Turn the turtle right.
+
+        Raises:
+            MovementException: If the movement was not successful.
+        """
+        self._logger.info("Turning right")
+        await self._command("return turtle.right()")
+
+    async def dig(self) -> None:
+        """Mine the block directly in front of the turtle.
+
+        Raises:
+            MovementException: If the movement was not successful.
+        """
+        self._logger.info("Digging")
+        await self._command("return turtle.dig()")
+
     async def start(self) -> None:
         """The main turtle process."""
-        routine = [self.forward, self.back, self.up, self.down]
+        routine = [
+            self.forward,
+            self.back,
+            self.up,
+            self.down,
+            self.turn_right,
+            self.turn_left,
+        ]
 
         for step in routine:
             try:
