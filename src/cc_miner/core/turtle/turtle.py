@@ -70,7 +70,7 @@ class Turtle:
             self._logger.error("Command failed")
         return res
 
-    async def _move_step(self, direction: Direction) -> None:
+    async def move(self, direction: Direction) -> None:
         """Move the turtle a step in a direction.
 
         Args:
@@ -83,14 +83,18 @@ class Turtle:
         horizontal_movement: bool = False
 
         if direction == Direction.FORWARD:
+            self._logger.info("Moving forward")
             position_change = -1
             horizontal_movement = True
         elif direction == Direction.BACK:
+            self._logger.info("Moving back")
             position_change = 1
             horizontal_movement = True
         elif direction == Direction.UP:
+            self._logger.info("Moving up")
             position_change = 1
         elif direction == Direction.DOWN:
+            self._logger.info("Moving down")
             position_change = -1
         else:
             raise MovementException("Bad direction.")
@@ -129,42 +133,6 @@ class Turtle:
     def position(self, value: Position) -> None:
         self._position = value
 
-    async def forward(self) -> None:
-        """Move the turtle forwards.
-
-        Raises:
-            MovementException: If the movement was not successful.
-        """
-        self._logger.info("Moving forward")
-        await self._move_step(Direction.FORWARD)
-
-    async def back(self) -> None:
-        """Move the turtle backwards.
-
-        Raises:
-            MovementException: If the movement was not successful.
-        """
-        self._logger.info("Moving back")
-        await self._move_step(Direction.BACK)
-
-    async def up(self) -> None:
-        """Move the turtle upwards.
-
-        Raises:
-            MovementException: If the movement was not successful.
-        """
-        self._logger.info("Moving up")
-        await self._move_step(Direction.UP)
-
-    async def down(self) -> None:
-        """Move the turtle downwards.
-
-        Raises:
-            MovementException: If the movement was not successful.
-        """
-        self._logger.info("Moving down")
-        await self._move_step(Direction.DOWN)
-
     async def turn_left(self) -> None:
         """Turn the turtle left.
 
@@ -183,17 +151,32 @@ class Turtle:
         self._logger.info("Turning right")
         await self._command("return turtle.turnRight()")
 
-    async def dig(self) -> None:
+    async def dig(self, direction: Direction) -> None:
         """Mine the block directly in front of the turtle.
+
+        Args:
+            direction (Direction): The direction to mine.
 
         Raises:
             MovementException: If the movement was not successful.
         """
-        self._logger.info("Digging")
-        await self._command("return turtle.dig()")
+        if direction == Direction.FORWARD:
+            self._logger.info("Digging in front")
+            await self._command("return turtle.dig()")
+        elif direction == Direction.DOWN:
+            self._logger.info("Digging below")
+            await self._command("return turtle.digDown()")
+        elif direction == Direction.UP:
+            self._logger.info("Digging above")
+            await self._command("return turtle.digUp()")
+        else:
+            raise CommandException("Bad direction.")
 
-    async def inspect(self) -> Dict[str, Any]:
+    async def inspect(self, direction: Direction) -> Dict[str, Any]:
         """Inspect the block directly in front of the turtle.
+
+        Args:
+            direction (Direction): The direction to mine.
 
         Raises:
             MovementException: If the movement was not successful.
@@ -201,8 +184,18 @@ class Turtle:
         Returns:
             Dict: The block metadata
         """
-        self._logger.info("Inspecting")
-        res = await self._command("return turtle.inspect()")
+        if direction == Direction.FORWARD:
+            self._logger.info("Inspecting in front")
+            res = await self._command("return turtle.inspect()")
+        elif direction == Direction.DOWN:
+            self._logger.info("Inspecting below")
+            res = await self._command("return turtle.inspectDown()")
+        elif direction == Direction.UP:
+            self._logger.info("Inspecting above")
+            res = await self._command("return turtle.inspectUp()")
+        else:
+            raise CommandException("Bad direction.")
+
         if res.status:
             return cast(Dict[str, Any], res.data)
         else:
@@ -210,10 +203,13 @@ class Turtle:
 
     async def start(self) -> None:
         """The main turtle process."""
-        data = await self.inspect()
-        logger.debug(data)
-        if data.get("tags", {}).get("minecraft:mineable/pickaxe", False) is True:
-            logger.debug("Block is mineable")
-            await self.dig()
+        check_directions = [Direction.FORWARD, Direction.UP]
 
-        await self.forward()
+        for direction in check_directions:
+            data = await self.inspect(direction)
+            logger.debug(data)
+            if data.get("tags", {}).get("minecraft:mineable/pickaxe", False) is True:
+                logger.debug("Block is mineable")
+                await self.dig(direction)
+
+        await self.move(Direction.FORWARD)
