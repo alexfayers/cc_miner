@@ -201,8 +201,8 @@ class Turtle:
         else:
             return {}
 
-    async def start(self) -> None:
-        """The main turtle process."""
+    async def step(self) -> None:
+        """A single step of the mining process."""
         check_directions = [Direction.FORWARD, Direction.UP]
 
         for direction in check_directions:
@@ -213,3 +213,8 @@ class Turtle:
                 await self.dig(direction)
 
         await self.move(Direction.FORWARD)
+
+    async def start(self) -> None:
+        """The main turtle process."""
+        for _ in range(16):
+            await self.step()
