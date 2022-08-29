@@ -144,6 +144,8 @@ class Turtle:
             elif direction == Direction.DOWN:
                 await self._command("return turtle.down()")
 
+        logger.debug("New position: %s", self.position)
+
     @property
     def position(self) -> Position:
         """The current position of the `Turtle`."""
