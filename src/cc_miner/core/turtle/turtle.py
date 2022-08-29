@@ -103,17 +103,17 @@ class Turtle:
                 raise MovementException("Bad bearing.")
 
             if direction == Direction.FORWARD:
-                await self._command("forward")
+                await self._command("turtle.forward")
             elif direction == Direction.BACK:
-                await self._command("back")
+                await self._command("turtle.back")
         else:
             # we're moving in the y plane
             self.position.location.y += position_change
 
             if direction == Direction.UP:
-                await self._command("up")
+                await self._command("turtle.up")
             elif direction == Direction.DOWN:
-                await self._command("down")
+                await self._command("turtle.down")
 
     @property
     def position(self) -> Position:
