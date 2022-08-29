@@ -30,4 +30,4 @@ def cli_main() -> None:
         f"Hi, welcome to {app.config.INFO.NAME} by {app.config.INFO.AUTHOR}!"
     )
 
-    app.start_server()
+    app.start_socketserver()

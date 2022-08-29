@@ -3,6 +3,7 @@
 import logging
 
 from ._helper import Config
+from .socket.server import SocketServer
 from .web.app import create_app
 
 
@@ -25,7 +26,12 @@ class BaseClass:
         else:
             package_logger.setLevel(logging.INFO)
 
-    def start_server(self) -> None:
+    def start_socketserver(self) -> None:
+        """Start the webserver in production mode."""
+        server = SocketServer(self.config.SOCKET.HOST, self.config.SOCKET.PORT)
+        server.start()
+
+    def start_webserver(self) -> None:
         """Start the webserver in development mode."""
         app = create_app()
-        app.run("0.0.0.0", 5000, debug=True)
+        app.run(self.config.WEB.HOST, self.config.WEB.PORT, debug=True)
