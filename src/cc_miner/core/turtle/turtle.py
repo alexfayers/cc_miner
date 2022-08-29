@@ -329,10 +329,14 @@ class Turtle:
         prerun_fuel_check: bool = False
 
         if prerun_fuel_check:
-            required_fuel: int = (xz_size * xz_size * y_size + xz_size * 2 + y_size) // 80 + 1
+            required_fuel: int = (
+                xz_size * xz_size * y_size + xz_size * 2 + y_size
+            ) // 80 + 1
             current_fuel = await self.get_fuel()
             if current_fuel < required_fuel:
-                raise HaltException(f"Not enough fuel to complete trip. Need {required_fuel - current_fuel} more.")
+                raise HaltException(
+                    f"Not enough fuel to complete trip. Need {required_fuel - current_fuel} more."
+                )
 
         for _ in range(y_size + 1):
             for row_number in range(xz_size):
