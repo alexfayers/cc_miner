@@ -214,6 +214,7 @@ class Turtle:
     async def start(self) -> None:
         """The main turtle process."""
         data = await self.inspect()
+        logger.debug(data)
         if data.get("minecraft:mineable/pickaxe") is True:
             logger.debug("Block is mineable")
             await self.dig()
