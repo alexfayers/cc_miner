@@ -218,33 +218,31 @@ class Turtle:
 
     async def dig_move(self, direction: Direction) -> None:
         """Move and dig if there's a block in the way."""
-        await self.dig_if_block(direction)
-
+        await self.dig(direction)
         await self.move(direction)
-
-    async def step(self) -> None:
-        """A single step of the mining process."""
-        await self.dig_if_block(Direction.FORWARD)
-        await self.move(Direction.FORWARD)
 
     async def start(self) -> None:
         """The main turtle process."""
         xz_size = 4
         y_size = 10
 
-        for _ in range(y_size):
+        for _ in range(y_size + 1):
             for row_number in range(xz_size):
                 for _ in range(xz_size - 1):
-                    await self.step()
+                    await self.dig_move(Direction.FORWARD)
                 # turn to next row
                 if row_number < (xz_size - 1):
                     if row_number % 2 == 0:
                         await self.turn_right()
-                        await self.step()
+                        await self.dig_move(Direction.FORWARD)
                         await self.turn_right()
                     else:
                         await self.turn_left()
-                        await self.step()
+                        await self.dig_move(Direction.FORWARD)
                         await self.turn_left()
-            await self.turn_right()
+            if xz_size % 2 == 0:
+                await self.turn_right()
+            else:
+                await self.turn_left()
+
             await self.dig_move(Direction.DOWN)
