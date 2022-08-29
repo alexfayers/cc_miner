@@ -1,7 +1,7 @@
 """Representation of a CC turtle."""
 
 import logging
-from typing import Any
+from typing import Any, Dict
 
 from websockets.server import WebSocketServerProtocol
 
@@ -196,31 +196,24 @@ class Turtle:
         self._logger.info("Digging")
         await self._command("return turtle.dig()")
 
-    async def inspect(self) -> None:
+    async def inspect(self) -> Dict[str, Any]:
         """Inspect the block directly in front of the turtle.
 
         Raises:
             MovementException: If the movement was not successful.
+
+        Returns:
+            Dict: The block metadata
         """
         self._logger.info("Inspecting")
-        data = await self._command("return turtle.inspect()")
-        print(data)
+        data: Dict[str, Any] = await self._command("return turtle.inspect()")
+        return data
 
     async def start(self) -> None:
         """The main turtle process."""
-        routine = [
-            # self.forward,
-            # self.back,
-            self.up,
-            self.down,
-            self.turn_right,
-            self.turn_left,
-            self.inspect,
-        ]
+        data = await self.inspect()
+        if data.get("minecraft:mineable/pickaxe") is True:
+            logger.debug("Block is mineable")
+            await self.dig()
 
-        for step in routine:
-            try:
-                await step()
-            except (MovementException, CommandException) as e:
-                self._logger.error(e)
-                break
+        await self.forward()
