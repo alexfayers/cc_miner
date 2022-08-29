@@ -224,11 +224,7 @@ class Turtle:
 
     async def step(self) -> None:
         """A single step of the mining process."""
-        check_directions = [Direction.DOWN, Direction.FORWARD]
-
-        for direction in check_directions:
-            await self.dig_if_block(direction)
-
+        await self.dig_if_block(Direction.FORWARD)
         await self.move(Direction.FORWARD)
 
     async def start(self) -> None:
@@ -236,22 +232,18 @@ class Turtle:
         xz_size = 4
         y_size = 10
 
-        xz_size -= 1
-
         for _ in range(y_size):
             for row_number in range(xz_size):
                 for _ in range(xz_size):
                     await self.step()
                 # turn to next row
-                if row_number < xz_size - 1:
-                    if row_number % 2 == 0:
-                        await self.turn_right()
-                        await self.step()
-                        await self.turn_right()
-                    else:
-                        await self.turn_left()
-                        await self.step()
-                        await self.turn_left()
-                else:
+                if row_number % 2 == 0:
                     await self.turn_right()
-                    await self.dig_move(Direction.DOWN)
+                    await self.step()
+                    await self.turn_right()
+                else:
+                    await self.turn_left()
+                    await self.step()
+                    await self.turn_left()
+            await self.turn_right()
+            await self.dig_move(Direction.DOWN)
