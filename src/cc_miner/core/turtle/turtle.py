@@ -31,6 +31,8 @@ class Turtle(EnforceOverrides):
     """If true, will check for fuel requirements before moving."""
     _home_location = Location(x=0, y=0, z=0)
     """The location that the `Turtle` will move to on completion."""
+    _slot_range = range(1, 17)  # 1-16
+    """The range of slots that can be used to store items."""
 
     def __init__(self, uid: int, socket: WebSocketServerProtocol) -> None:
         """Initialise a turtle representation.
@@ -330,6 +332,42 @@ class Turtle(EnforceOverrides):
 
         return movement_cost
 
+    async def inventory_select(self, search: str) -> None:
+        """Select an item from the turtle's inventory.
+
+        Args:
+            search (str): The search string.
+        """
+        for slot in self._slot_range:
+            details = await self._command(f"return turtle.getItemDetail({slot})")
+            print(details)
+
+            await self._command(f"return turtle.select({search}")
+            raise HaltException("Inventory select test")
+
+    async def place_block(self, direction: Direction, block_search: str) -> None:
+        """Place a block in the direction the turtle is facing.
+
+        Args:
+            direction (Direction): The direction to place the block.
+            block_search (str): The block to place. If the block isn't in
+                the inventory, an error will be raised.
+
+        Raises:
+            MovementException: If the movement was not successful.
+        """
+        if direction == Direction.FORWARD:
+            self._logger.info("Placing in front")
+            await self._command("return turtle.place()")
+        elif direction == Direction.DOWN:
+            self._logger.info("Placing below")
+            await self._command("return turtle.placeDown()")
+        elif direction == Direction.UP:
+            self._logger.info("Placing above")
+            await self._command("return turtle.placeUp()")
+        else:
+            raise CommandException("Bad direction.")
+
     async def _process_complete(self) -> None:
         """Called on completion of processing."""
         self._check_fuel = False
@@ -400,7 +438,7 @@ class StripTurtle(Turtle):
         # blocks to leave between each branch
         branch_spacing = 3
         # number of blocks to mine in each branch
-        branch_length = 10
+        branch_length = 20
         # total number of pairs of branches
         branch_pair_count = 1
         # check if enough fuel before mining
@@ -426,9 +464,11 @@ class StripTurtle(Turtle):
 
         for _ in range(branch_pair_count):
             # continue main branch
-            for _ in range(branch_spacing + 1):
+            for branch_position in range(branch_spacing + 1):
                 await self.dig_move(Direction.FORWARD)
                 await self.dig(Direction.UP)
+                if branch_position % 15 == 0:
+                    await self.place_block(Direction.UP, "torch")
 
             # mine left branch
             await self.turn_left()
@@ -447,3 +487,12 @@ class StripTurtle(Turtle):
 
             # face forward again to prepare for next branch pair
             await self.turn_right()
+
+
+class TestTurtle(Turtle):
+    """A turtle to test out features."""
+
+    @overrides
+    async def start(self) -> None:
+        """The main turtle process."""
+        await self.inventory_select("cobblestone")
