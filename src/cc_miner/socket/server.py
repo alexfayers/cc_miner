@@ -2,13 +2,13 @@
 import asyncio
 import json
 import logging
-from typing import Set
+from typing import Set, Type
 
 import websockets
 from pydantic import ValidationError
 from websockets.server import WebSocketServerProtocol
 
-from ..core.turtle import Turtle
+from ..core.turtle import StripTurtle, Turtle
 from .types import CommandResponse, DataMessage, ErrorMessage, RegisterMessage
 
 logger = logging.getLogger(__name__)
@@ -18,6 +18,7 @@ class SocketServer:
     """A websocket server which communicates with turtles."""
 
     clients: Set[Turtle] = set()
+    mining_type: Type[Turtle] = StripTurtle
 
     def __init__(self, host: str, port: int) -> None:
         """Initialise the server.
@@ -59,7 +60,7 @@ class SocketServer:
             websocket (WebSocketServerProtocol): The websocket connection.
             _id (int): The unique id of the turtle.
         """
-        turtle = Turtle(_id, websocket)
+        turtle = self.mining_type(_id, websocket)
         self.clients.add(turtle)
         await self.send(websocket, "Registered")
         try:

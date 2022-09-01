@@ -3,16 +3,18 @@
 import logging
 from typing import Any, Dict, cast
 
+from overrides import EnforceOverrides, overrides
 from websockets.server import WebSocketServerProtocol
 
+from ..._helper import SuccessLogger
 from ...socket.types import CommandMessage, CommandResponse
 from .exceptions import CommandException, HaltException, MovementException
 from .types import Bearing, Direction, Location, Position
 
-logger = logging.getLogger(__name__)
+logger = cast(SuccessLogger, logging.getLogger(__name__))
 
 
-class Turtle:
+class Turtle(EnforceOverrides):
     """A representation of, and connection to, a turtle."""
 
     uid: int
@@ -23,10 +25,12 @@ class Turtle:
     """The name of the turtle."""
     _position: Position
     """The (internal) current position of the turtle."""
-    _logger: logging.Logger
+    _logger: SuccessLogger
     """The logger for the class."""
     _check_fuel = True
     """If true, will check for fuel requirements before moving."""
+    _home_location = Location(x=0, y=0, z=0)
+    """The location that the `Turtle` will move to on completion."""
 
     def __init__(self, uid: int, socket: WebSocketServerProtocol) -> None:
         """Initialise a turtle representation.
@@ -40,7 +44,7 @@ class Turtle:
         )
         self.uid = uid
         self.socket = socket
-        self._logger = logging.getLogger(f"{__name__}.{self.uid}")
+        self._logger = cast(SuccessLogger, logging.getLogger(f"{__name__}.{self.uid}"))
 
     def __repr__(self) -> str:
         """The string representation of the `Turtle` object."""
@@ -326,10 +330,31 @@ class Turtle:
 
         return movement_cost
 
+    async def _process_complete(self) -> None:
+        """Called on completion of processing."""
+        self._check_fuel = False
+        self._logger.success("Processing complete, returning home.")
+        await self.move_to_location(self._home_location)
+
+    async def start(self) -> None:
+        """The main turtle process.
+
+        Must be overridden in subclasses.
+        """
+        raise NotImplementedError("Turtle.start() not implemented.")
+
+
+class QuarryTurtle(Turtle):
+    """A turtle that can mine a quarry."""
+
+    @overrides
     async def start(self) -> None:
         """The main turtle process."""
+        # width of the quarry
         xz_size = 8
+        # height of the quarry
         y_size = 10
+        # check if enough fuel before mining
         prerun_fuel_check: bool = False
 
         if prerun_fuel_check:
@@ -362,3 +387,63 @@ class Turtle:
                 await self.turn_left()
 
             await self.dig_move(Direction.DOWN)
+
+        await self._process_complete()
+
+
+class StripTurtle(Turtle):
+    """A turtle that can mine a stripmine."""
+
+    @overrides
+    async def start(self) -> None:
+        """The main turtle process."""
+        # blocks to leave between each branch
+        branch_spacing = 3
+        # number of blocks to mine in each branch
+        branch_length = 10
+        # total number of pairs of branches
+        branch_pair_count = 1
+        # check if enough fuel before mining
+        prerun_fuel_check: bool = False
+
+        # branch height (1 or 2)
+        branch_height = 2
+
+        if prerun_fuel_check:
+            required_fuel: int = (
+                branch_height  # height of the branch
+                * (
+                    branch_spacing + 1
+                )  # spacing between branches, plus 1 for the connection between branches
+                * (branch_length * 2)
+                * 2  # length of mining each branch and going back to main
+            ) * branch_pair_count
+            current_fuel = await self.get_fuel()
+            if current_fuel < required_fuel:
+                raise HaltException(
+                    f"Not enough fuel to complete trip. Need {required_fuel - current_fuel} more."
+                )
+
+        for _ in range(branch_pair_count):
+            # continue main branch
+            for _ in range(branch_spacing + 1):
+                await self.dig_move(Direction.FORWARD)
+                await self.dig(Direction.UP)
+
+            # mine left branch
+            await self.turn_left()
+            for _ in range(2):
+                for _ in range(branch_length):
+                    await self.dig_move(Direction.FORWARD)
+                    await self.dig(Direction.UP)
+
+                # go back to main branch
+                await self.turn_right()
+                await self.turn_right()
+
+                for _ in range(branch_length):
+                    # we don't need to dig move because we already mined the blocks
+                    await self.move(Direction.FORWARD)
+
+            # face forward again to prepare for next branch pair
+            await self.turn_right()
