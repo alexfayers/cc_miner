@@ -82,7 +82,7 @@ class Turtle(EnforceOverrides):
         """Check if the turtle has enough fuel to move."""
         fuel = await self.get_fuel()
         steps_to_get_back = await self.move_to_location(
-            Location(x=0, y=0, z=0), cost_calculation=True
+            self._home_location, cost_calculation=True
         )
 
         if steps_to_get_back >= fuel:
@@ -90,7 +90,7 @@ class Turtle(EnforceOverrides):
                 "Won't have enough fuel to get back if we continue - stopping current process and returning!"
             )
             self._check_fuel = False
-            await self.move_to_location(Location(x=0, y=0, z=0))
+            await self.move_to_location(self._home_location)
             self._logger.warning(f"Stopped at {self.position.location}")
             raise HaltException("Returned before ran out of fuel.")
 
@@ -476,6 +476,9 @@ class StripTurtle(Turtle):
             for _ in range(branch_spacing + 1):
                 await self.dig_move(Direction.FORWARD)
                 await self.dig(Direction.UP)
+
+            # update home location current point on main branch
+            self._home_location = self.position.location
 
             # mine left branch
             await self.turn_left()
