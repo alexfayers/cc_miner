@@ -510,5 +510,5 @@ class TestTurtle(Turtle):
     @overrides
     async def start(self) -> None:
         """The main turtle process."""
-        await self.inventory_select("cobblestone")
+        await self.inventory_select("torch")
         await self.place_block(Direction.UP)
