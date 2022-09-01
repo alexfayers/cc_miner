@@ -340,10 +340,10 @@ class Turtle(EnforceOverrides):
         """
         for slot in self._slot_range:
             res = await self._command(f"return turtle.getItemDetail({slot})")
-            details: InventorySlotInfo = res.data
+            details = InventorySlotInfo(**res.data)
 
             if search in details.name:
-                self._logger.info(f"Found '{details.name}' in slot {slot} which matches search '{search}'")
+                self._logger.info(f"Found {details.count} '{details.name}' in slot {slot} which matches search '{search}'")
                 await self._command(f"return turtle.select({slot})")
                 return
 
