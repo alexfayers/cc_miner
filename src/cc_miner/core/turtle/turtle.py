@@ -478,19 +478,19 @@ class StripTurtle(Turtle):
 
         for _ in range(branch_pair_count):
             # continue main branch
-            for branch_position in range(branch_spacing + 1):
+            for _ in range(branch_spacing + 1):
                 await self.dig_move(Direction.FORWARD)
                 await self.dig(Direction.UP)
-                if branch_position % 15 == 0:
-                    await self.inventory_select("cobblestone")
-                    await self.place_block(Direction.UP)
 
             # mine left branch
             await self.turn_left()
             for _ in range(2):
-                for _ in range(branch_length):
+                for branch_position in range(branch_length):
                     await self.dig_move(Direction.FORWARD)
                     await self.dig(Direction.UP)
+                    if branch_position % 12 == 0:
+                        await self.inventory_select("torch")
+                        await self.place_block(Direction.UP)
 
                 # go back to main branch
                 await self.turn_right()
