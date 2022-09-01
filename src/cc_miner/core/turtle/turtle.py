@@ -452,9 +452,9 @@ class StripTurtle(Turtle):
         # blocks to leave between each branch
         branch_spacing = 3
         # number of blocks to mine in each branch
-        branch_length = 20
+        branch_length = 30
         # total number of pairs of branches
-        branch_pair_count = 1
+        branch_pair_count = 5
         # check if enough fuel before mining
         prerun_fuel_check: bool = False
 
@@ -495,10 +495,10 @@ class StripTurtle(Turtle):
 
                 for branch_position in range(branch_length):
                     # we don't need to dig move because we already mined the blocks
-                    await self.move(Direction.FORWARD)
                     if branch_position % 15 == 0:
                         await self.inventory_select("torch")
                         await self.place_block(Direction.UP)
+                    await self.move(Direction.FORWARD)
 
             # face forward again to prepare for next branch pair
             await self.turn_right()
