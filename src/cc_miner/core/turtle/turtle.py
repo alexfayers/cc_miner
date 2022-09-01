@@ -457,6 +457,8 @@ class StripTurtle(Turtle):
         branch_pair_count = 5
         # check if enough fuel before mining
         prerun_fuel_check: bool = True
+        # whether to place torches in the stripmine
+        do_place_torches = True
 
         if prerun_fuel_check:
             required_fuel: int = (
@@ -493,9 +495,15 @@ class StripTurtle(Turtle):
 
                 for branch_position in range(branch_length):
                     # we don't need to dig move because we already mined the blocks
-                    if branch_position % 15 == 0:
-                        await self.inventory_select("torch")
-                        await self.place_block(Direction.UP)
+                    if do_place_torches:
+                        if branch_position % 15 == 0:
+                            try:
+                                await self.inventory_select("torch")
+                            except InventoryException:
+                                self._logger.error("Ran out of torches.")
+                                do_place_torches = False
+                            else:
+                                await self.place_block(Direction.UP)
                     await self.move(Direction.FORWARD)
 
             # face forward again to prepare for next branch pair
