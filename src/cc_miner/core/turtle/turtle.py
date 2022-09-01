@@ -8,8 +8,14 @@ from websockets.server import WebSocketServerProtocol
 
 from ..._helper import SuccessLogger
 from ...socket.types import CommandMessage, CommandResponse
-from .exceptions import CommandException, HaltException, MovementException
-from .types import Bearing, Direction, Location, Position
+from .exceptions import (
+    CommandException,
+    HaltException,
+    InteractionException,
+    InventoryException,
+    MovementException,
+)
+from .types import Bearing, Direction, InventorySlotInfo, Location, Position
 
 logger = cast(SuccessLogger, logging.getLogger(__name__))
 
@@ -31,6 +37,8 @@ class Turtle(EnforceOverrides):
     """If true, will check for fuel requirements before moving."""
     _home_location = Location(x=0, y=0, z=0)
     """The location that the `Turtle` will move to on completion."""
+    _slot_range = range(1, 17)  # 1-16
+    """The range of slots that can be used to store items."""
 
     def __init__(self, uid: int, socket: WebSocketServerProtocol) -> None:
         """Initialise a turtle representation.
@@ -80,7 +88,7 @@ class Turtle(EnforceOverrides):
         """Check if the turtle has enough fuel to move."""
         fuel = await self.get_fuel()
         steps_to_get_back = await self.move_to_location(
-            Location(x=0, y=0, z=0), cost_calculation=True
+            self._home_location, cost_calculation=True
         )
 
         if steps_to_get_back >= fuel:
@@ -88,7 +96,7 @@ class Turtle(EnforceOverrides):
                 "Won't have enough fuel to get back if we continue - stopping current process and returning!"
             )
             self._check_fuel = False
-            await self.move_to_location(Location(x=0, y=0, z=0))
+            await self.move_to_location(self._home_location)
             self._logger.warning(f"Stopped at {self.position.location}")
             raise HaltException("Returned before ran out of fuel.")
 
@@ -330,6 +338,56 @@ class Turtle(EnforceOverrides):
 
         return movement_cost
 
+    async def inventory_select(self, search: str) -> None:
+        """Select an item from the turtle's inventory.
+
+        Args:
+            search (str): The search string.
+
+        Raises:
+            InventoryException: If the search item could not be found.
+        """
+        for slot in self._slot_range:
+            res = await self._command(f"return turtle.getItemDetail({slot})")
+            if res.data is None:
+                # slot is empty
+                continue
+
+            details = InventorySlotInfo(**res.data)
+
+            if search in details.name:
+                self._logger.info(
+                    f"Found {details.count} '{details.name}' in slot {slot} "
+                    f"which matches search '{search}'"
+                )
+                await self._command(f"return turtle.select({slot})")
+                return
+        raise InventoryException("Could not find item.")
+
+    async def place_block(self, direction: Direction) -> None:
+        """Place the currently selected block in a direction.
+
+        Args:
+            direction (Direction): The direction to place the block.
+
+        Raises:
+            CommandException: If the direction was not valid.
+        """
+        if direction == Direction.FORWARD:
+            self._logger.info("Placing in front")
+            res = await self._command("return turtle.place()")
+        elif direction == Direction.DOWN:
+            self._logger.info("Placing below")
+            res = await self._command("return turtle.placeDown()")
+        elif direction == Direction.UP:
+            self._logger.info("Placing above")
+            res = await self._command("return turtle.placeUp()")
+        else:
+            raise CommandException("Bad direction.")
+
+        if not res.status:
+            raise InteractionException("Failed to place block.")
+
     async def _process_complete(self) -> None:
         """Called on completion of processing."""
         self._check_fuel = False
@@ -400,23 +458,22 @@ class StripTurtle(Turtle):
         # blocks to leave between each branch
         branch_spacing = 3
         # number of blocks to mine in each branch
-        branch_length = 10
+        branch_length = 20
         # total number of pairs of branches
-        branch_pair_count = 1
+        branch_pair_count = 5
         # check if enough fuel before mining
-        prerun_fuel_check: bool = False
-
-        # branch height (1 or 2)
-        branch_height = 2
+        prerun_fuel_check: bool = True
+        # whether to place torches in the stripmine
+        do_place_torches = True
 
         if prerun_fuel_check:
             required_fuel: int = (
-                branch_height  # height of the branch
-                * (
+                (
                     branch_spacing + 1
                 )  # spacing between branches, plus 1 for the connection between branches
-                * (branch_length * 2)
-                * 2  # length of mining each branch and going back to main
+                + (
+                    branch_length * 4 + 1
+                )  # length of mining each branch and going back to main
             ) * branch_pair_count
             current_fuel = await self.get_fuel()
             if current_fuel < required_fuel:
@@ -430,6 +487,9 @@ class StripTurtle(Turtle):
                 await self.dig_move(Direction.FORWARD)
                 await self.dig(Direction.UP)
 
+            # update home location current point on main branch
+            self._home_location = self.position.location
+
             # mine left branch
             await self.turn_left()
             for _ in range(2):
@@ -441,9 +501,28 @@ class StripTurtle(Turtle):
                 await self.turn_right()
                 await self.turn_right()
 
-                for _ in range(branch_length):
+                for branch_position in range(branch_length):
                     # we don't need to dig move because we already mined the blocks
+                    if do_place_torches:
+                        if branch_position % 15 == 0:
+                            try:
+                                await self.inventory_select("torch")
+                            except InventoryException:
+                                self._logger.error("Ran out of torches.")
+                                do_place_torches = False
+                            else:
+                                await self.place_block(Direction.UP)
                     await self.move(Direction.FORWARD)
 
             # face forward again to prepare for next branch pair
             await self.turn_right()
+
+
+class TestTurtle(Turtle):
+    """A turtle to test out features."""
+
+    @overrides
+    async def start(self) -> None:
+        """The main turtle process."""
+        await self.inventory_select("torch")
+        await self.place_block(Direction.UP)
