@@ -452,23 +452,18 @@ class StripTurtle(Turtle):
         # blocks to leave between each branch
         branch_spacing = 3
         # number of blocks to mine in each branch
-        branch_length = 30
+        branch_length = 20
         # total number of pairs of branches
         branch_pair_count = 5
         # check if enough fuel before mining
         prerun_fuel_check: bool = True
 
-        # branch height (1 or 2)
-        branch_height = 2
-
         if prerun_fuel_check:
             required_fuel: int = (
-                branch_height  # height of the branch
-                * (
+                (
                     branch_spacing + 1
                 )  # spacing between branches, plus 1 for the connection between branches
-                * (branch_length * 2)
-                * 2  # length of mining each branch and going back to main
+                + (branch_length * 4 + 1)  # length of mining each branch and going back to main
             ) * branch_pair_count
             current_fuel = await self.get_fuel()
             if current_fuel < required_fuel:
