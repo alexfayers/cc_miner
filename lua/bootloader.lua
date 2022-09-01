@@ -69,6 +69,7 @@ if ws then
         else 
             -- server disconnected
             print("Disconnected, byebye")
+            break
         end
     end
 else
