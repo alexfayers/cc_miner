@@ -9,7 +9,7 @@ from websockets.server import WebSocketServerProtocol
 from ..._helper import SuccessLogger
 from ...socket.types import CommandMessage, CommandResponse
 from .exceptions import CommandException, HaltException, MovementException
-from .types import Bearing, Direction, Location, Position
+from .types import Bearing, Direction, Location, Position, InventorySlotInfo
 
 logger = cast(SuccessLogger, logging.getLogger(__name__))
 
@@ -339,10 +339,14 @@ class Turtle(EnforceOverrides):
             search (str): The search string.
         """
         for slot in self._slot_range:
-            details = await self._command(f"return turtle.getItemDetail({slot})")
-            print(details)
+            res = await self._command(f"return turtle.getItemDetail({slot})")
+            details: InventorySlotInfo = res.data
 
-            await self._command(f"return turtle.select({search}")
+            if search in details.name:
+                self._logger.info(f"Found '{details.name}' in slot {slot} which matches search '{search}'")
+                await self._command(f"return turtle.select({slot})")
+                return
+
             raise HaltException("Inventory select test")
 
     async def place_block(self, direction: Direction, block_search: str) -> None:

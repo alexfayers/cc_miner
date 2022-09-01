@@ -35,3 +35,10 @@ class Direction(IntEnum):
     BACK = 1
     UP = 2
     DOWN = 3
+
+
+class InventorySlotInfo(BaseModel):
+    """The information about a block within a turtle's inventory."""
+
+    name: str = Field(..., description="The name of the block.")
+    count: int = Field(..., description="The number of blocks in the slot.")
