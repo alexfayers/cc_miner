@@ -456,7 +456,7 @@ class StripTurtle(Turtle):
         # total number of pairs of branches
         branch_pair_count = 5
         # check if enough fuel before mining
-        prerun_fuel_check: bool = False
+        prerun_fuel_check: bool = True
 
         # branch height (1 or 2)
         branch_height = 2
