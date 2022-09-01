@@ -8,7 +8,7 @@ from websockets.server import WebSocketServerProtocol
 
 from ..._helper import SuccessLogger
 from ...socket.types import CommandMessage, CommandResponse
-from .exceptions import CommandException, HaltException, MovementException
+from .exceptions import CommandException, HaltException, MovementException, InventoryException
 from .types import Bearing, Direction, Location, Position, InventorySlotInfo
 
 logger = cast(SuccessLogger, logging.getLogger(__name__))
@@ -337,17 +337,22 @@ class Turtle(EnforceOverrides):
 
         Args:
             search (str): The search string.
+
+        Raises:
+            InventoryException: If the search item could not be found.
         """
         for slot in self._slot_range:
             res = await self._command(f"return turtle.getItemDetail({slot})")
             details = InventorySlotInfo(**res.data)
 
             if search in details.name:
-                self._logger.info(f"Found {details.count} '{details.name}' in slot {slot} which matches search '{search}'")
+                self._logger.info(
+                    f"Found {details.count} '{details.name}' in slot {slot} "
+                    f"which matches search '{search}'"
+                )
                 await self._command(f"return turtle.select({slot})")
                 return
-
-            raise HaltException("Inventory select test")
+        raise InventoryException("Could not find item.")
 
     async def place_block(self, direction: Direction, block_search: str) -> None:
         """Place a block in the direction the turtle is facing.

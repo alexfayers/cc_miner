@@ -15,3 +15,7 @@ class CommandException(Exception):
 
 class HaltException(Exception):
     """Called when a `Turtle` halts itself (e.g. if there isn't enough fuel etc.)."""
+
+
+class InventoryException(Exception):
+    """An error to do with a `Turtle` inventory."""
