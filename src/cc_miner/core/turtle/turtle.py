@@ -485,20 +485,20 @@ class StripTurtle(Turtle):
             # mine left branch
             await self.turn_left()
             for _ in range(2):
-                for branch_position in range(branch_length):
+                for _ in range(branch_length):
                     await self.dig_move(Direction.FORWARD)
                     await self.dig(Direction.UP)
-                    if branch_position % 12 == 0:
-                        await self.inventory_select("torch")
-                        await self.place_block(Direction.UP)
 
                 # go back to main branch
                 await self.turn_right()
                 await self.turn_right()
 
-                for _ in range(branch_length):
+                for branch_position in range(branch_length):
                     # we don't need to dig move because we already mined the blocks
                     await self.move(Direction.FORWARD)
+                    if branch_position % 15 == 0:
+                        await self.inventory_select("torch")
+                        await self.place_block(Direction.UP)
 
             # face forward again to prepare for next branch pair
             await self.turn_right()
