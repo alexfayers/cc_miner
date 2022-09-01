@@ -343,6 +343,10 @@ class Turtle(EnforceOverrides):
         """
         for slot in self._slot_range:
             res = await self._command(f"return turtle.getItemDetail({slot})")
+            if res.data is None:
+                # slot is empty
+                continue
+
             details = InventorySlotInfo(**res.data)
 
             if search in details.name:
