@@ -8,8 +8,14 @@ from websockets.server import WebSocketServerProtocol
 
 from ..._helper import SuccessLogger
 from ...socket.types import CommandMessage, CommandResponse
-from .exceptions import CommandException, HaltException, MovementException, InventoryException, InteractionException
-from .types import Bearing, Direction, Location, Position, InventorySlotInfo
+from .exceptions import (
+    CommandException,
+    HaltException,
+    InteractionException,
+    InventoryException,
+    MovementException,
+)
+from .types import Bearing, Direction, InventorySlotInfo, Location, Position
 
 logger = cast(SuccessLogger, logging.getLogger(__name__))
 
@@ -465,7 +471,9 @@ class StripTurtle(Turtle):
                 (
                     branch_spacing + 1
                 )  # spacing between branches, plus 1 for the connection between branches
-                + (branch_length * 4 + 1)  # length of mining each branch and going back to main
+                + (
+                    branch_length * 4 + 1
+                )  # length of mining each branch and going back to main
             ) * branch_pair_count
             current_fuel = await self.get_fuel()
             if current_fuel < required_fuel:
