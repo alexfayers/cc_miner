@@ -329,7 +329,7 @@ class Turtle:
     async def start(self) -> None:
         """The main turtle process."""
         xz_size = 8
-        y_size = 40
+        y_size = 20
         prerun_fuel_check: bool = False
 
         if prerun_fuel_check:
