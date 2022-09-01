@@ -19,3 +19,7 @@ class HaltException(Exception):
 
 class InventoryException(Exception):
     """An error to do with a `Turtle` inventory."""
+
+
+class InteractionException(Exception):
+    """An error to do with an interaction by the `Turtle` with the world."""

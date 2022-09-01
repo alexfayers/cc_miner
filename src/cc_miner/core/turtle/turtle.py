@@ -8,7 +8,7 @@ from websockets.server import WebSocketServerProtocol
 
 from ..._helper import SuccessLogger
 from ...socket.types import CommandMessage, CommandResponse
-from .exceptions import CommandException, HaltException, MovementException, InventoryException
+from .exceptions import CommandException, HaltException, MovementException, InventoryException, InteractionException
 from .types import Bearing, Direction, Location, Position, InventorySlotInfo
 
 logger = cast(SuccessLogger, logging.getLogger(__name__))
@@ -358,28 +358,29 @@ class Turtle(EnforceOverrides):
                 return
         raise InventoryException("Could not find item.")
 
-    async def place_block(self, direction: Direction, block_search: str) -> None:
-        """Place a block in the direction the turtle is facing.
+    async def place_block(self, direction: Direction) -> None:
+        """Place the currently selected block in a direction.
 
         Args:
             direction (Direction): The direction to place the block.
-            block_search (str): The block to place. If the block isn't in
-                the inventory, an error will be raised.
 
         Raises:
-            MovementException: If the movement was not successful.
+            CommandException: If the direction was not valid.
         """
         if direction == Direction.FORWARD:
             self._logger.info("Placing in front")
-            await self._command("return turtle.place()")
+            res = await self._command("return turtle.place()")
         elif direction == Direction.DOWN:
             self._logger.info("Placing below")
-            await self._command("return turtle.placeDown()")
+            res = await self._command("return turtle.placeDown()")
         elif direction == Direction.UP:
             self._logger.info("Placing above")
-            await self._command("return turtle.placeUp()")
+            res = await self._command("return turtle.placeUp()")
         else:
             raise CommandException("Bad direction.")
+
+        if not res.status:
+            raise InteractionException("Failed to place block.")
 
     async def _process_complete(self) -> None:
         """Called on completion of processing."""
@@ -481,7 +482,8 @@ class StripTurtle(Turtle):
                 await self.dig_move(Direction.FORWARD)
                 await self.dig(Direction.UP)
                 if branch_position % 15 == 0:
-                    await self.place_block(Direction.UP, "torch")
+                    await self.inventory_select("cobblestone")
+                    await self.place_block(Direction.UP)
 
             # mine left branch
             await self.turn_left()
@@ -509,3 +511,4 @@ class TestTurtle(Turtle):
     async def start(self) -> None:
         """The main turtle process."""
         await self.inventory_select("cobblestone")
+        await self.place_block(Direction.UP)
