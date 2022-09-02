@@ -23,23 +23,22 @@ pipx install .
 You can use cc_miner as an importable module:
 
 ```py
-from project_name import BaseClass
+from cc_miner import BaseClass
 
 app = BaseClass("config.yml")
 
-app.logger.info(
-    f"Hi, welcome to {app.config.INFO.NAME} by {app.config.INFO.AUTHOR}!"
-)
+# start the socket server listener
+app.start_socketserver()
 ```
 
 Or as a command line interface:
 
 ```bash
-$ python3 -m project_name
+$ python3 -m cc_miner
 # or
-$ project_name
+$ cc_miner
 ```
 
 ## Documentation
 
-Documentation for cc_miner can be found at [https://alexfayers.github.io/cc_miner](https://alexfayers.github.io/cc_miner).
+API documentation for cc_miner can be found at [https://alexfayers.github.io/cc_miner](https://alexfayers.github.io/cc_miner).
