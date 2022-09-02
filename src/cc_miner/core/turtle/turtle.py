@@ -475,9 +475,9 @@ class StripTurtle(Turtle):
         # whether to place torches in the stripmine
         do_place_torches: bool = True
         # amount of blocks that torch light travels
-        torch_light: int = 12
+        torch_light: int = 13
         # current light level on the turtle
-        current_light_level: int = torch_light
+        current_light_level: int
 
         if prerun_fuel_check:
             required_fuel: int = (
@@ -514,20 +514,22 @@ class StripTurtle(Turtle):
                 await self.turn_right()
                 await self.turn_right()
 
+                current_light_level = torch_light - 1
                 for branch_position in range(branch_length):
+                    # place torches if necessary
+                    if do_place_torches and current_light_level <= 0:
+                        try:
+                            await self.place_torch()
+                        except InventoryException:
+                            # place failed
+                            do_place_torches = False
+                        else:
+                            # place success
+                            current_light_level = torch_light
+
                     # we don't need to dig move because we already mined the blocks
-                    if do_place_torches:
-                        if current_light_level == 0:
-                            try:
-                                await self.place_torch()
-                            except InventoryException:
-                                # place failed
-                                do_place_torches = False
-                            else:
-                                # place success
-                                current_light_level = torch_light
                     await self.move(Direction.FORWARD)
-                    current_light_level -= 1
+                    current_light_level -= 1  # decrease light level because we moved
 
                     # at end of branch if there's not enough light, slap a torch down
                     if branch_position == (branch_length - 1) and do_place_torches and current_light_level <= 0:
