@@ -467,7 +467,7 @@ class StripTurtle(Turtle):
         # blocks to leave between each branch
         branch_spacing: int = 3
         # number of blocks to mine in each branch
-        branch_length: int = 20
+        branch_length: int = 30
         # total number of pairs of branches
         branch_pair_count: int = 5
         # check if enough fuel before mining
