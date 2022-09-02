@@ -515,12 +515,12 @@ class StripTurtle(Turtle):
                 await self.turn_right()
 
                 first_torch = True
-                current_light_level = torch_light - 1
+                current_light_level = torch_light
                 for branch_position in range(branch_length):
                     # place torches if necessary
                     target_light: int = 0 if first_torch else -torch_light
 
-                    if do_place_torches and current_light_level <= target_light:
+                    if do_place_torches and current_light_level < target_light:
                         if first_torch:
                             first_torch = False
 
