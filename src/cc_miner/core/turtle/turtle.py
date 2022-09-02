@@ -492,7 +492,7 @@ class StripTurtle(Turtle):
     """whether to place torches in the stripmine"""
     torch_light: int = 12
     """amount of blocks that torch light travels"""
-    current_light_level: int
+    current_light_level: int = 0
     """current light level on the turtle"""
 
     async def place_torch(self) -> None:
