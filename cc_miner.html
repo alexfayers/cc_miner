@@ -75,25 +75,24 @@ pip install .
 
 <p>You can use cc_miner as an importable module:</p>
 
-<div class="pdoc-code codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">project_name</span> <span class="kn">import</span> <span class="n">BaseClass</span>
+<div class="pdoc-code codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">cc_miner</span> <span class="kn">import</span> <span class="n">BaseClass</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">BaseClass</span><span class="p">(</span><span class="s2">&quot;config.yml&quot;</span><span class="p">)</span>
 
-<span class="n">app</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">&quot;Hi, welcome to </span><span class="si">{</span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">INFO</span><span class="o">.</span><span class="n">NAME</span><span class="si">}</span><span class="s2"> by </span><span class="si">{</span><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">INFO</span><span class="o">.</span><span class="n">AUTHOR</span><span class="si">}</span><span class="s2">!&quot;</span>
-<span class="p">)</span>
+<span class="c1"># start the socket server listener</span>
+<span class="n">app</span><span class="o">.</span><span class="n">start_socketserver</span><span class="p">()</span>
 </code></pre></div>
 
 <p>Or as a command line interface:</p>
 
-<div class="pdoc-code codehilite"><pre><span></span><code>$ python3 -m project_name
+<div class="pdoc-code codehilite"><pre><span></span><code>$ python3 -m cc_miner
 <span class="c1"># or</span>
-$ project_name
+$ cc_miner
 </code></pre></div>
 
 <h2 id="documentation">Documentation</h2>
 
-<p>Documentation for cc_miner can be found at <a href="https://alexfayers.github.io/cc_miner">https://alexfayers.github.io/cc_miner</a>.</p>
+<p>API documentation for cc_miner can be found at <a href="https://alexfayers.github.io/cc_miner">https://alexfayers.github.io/cc_miner</a>.</p>
 </div>
 
                         <input id="cc_miner-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
