@@ -475,7 +475,7 @@ class StripTurtle(Turtle):
         # whether to place torches in the stripmine
         do_place_torches: bool = True
         # amount of blocks that torch light travels
-        torch_light: int = 13
+        torch_light: int = 12
         # current light level on the turtle
         current_light_level: int = torch_light
 
