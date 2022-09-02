@@ -514,10 +514,10 @@ class StripTurtle(Turtle):
                 await self.turn_right()
                 await self.turn_right()
 
-                for _ in range(branch_length):
+                for branch_position in range(branch_length):
                     # we don't need to dig move because we already mined the blocks
                     if do_place_torches:
-                        if current_light_level == -torch_light:
+                        if current_light_level == 0:
                             try:
                                 await self.place_torch()
                             except InventoryException:
@@ -529,16 +529,16 @@ class StripTurtle(Turtle):
                     await self.move(Direction.FORWARD)
                     current_light_level -= 1
 
-                # at end of branch if there's not enough light, slap a torch down
-                if do_place_torches and current_light_level <= 0:
-                    try:
-                        await self.place_torch()
-                    except InventoryException:
-                        # place failed
-                        do_place_torches = False
-                    else:
-                        # place success
-                        current_light_level = torch_light
+                    # at end of branch if there's not enough light, slap a torch down
+                    if branch_position == (branch_length - 1) and do_place_torches and current_light_level <= 0:
+                        try:
+                            await self.place_torch()
+                        except InventoryException:
+                            # place failed
+                            do_place_torches = False
+                        else:
+                            # place success
+                            current_light_level = torch_light
 
             # face forward again to prepare for next branch pair
             await self.turn_right()
