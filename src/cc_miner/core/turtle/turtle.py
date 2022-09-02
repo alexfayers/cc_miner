@@ -514,10 +514,18 @@ class StripTurtle(Turtle):
                 await self.turn_right()
                 await self.turn_right()
 
+                first_torch = True
                 current_light_level = torch_light - 1
                 for branch_position in range(branch_length):
                     # place torches if necessary
-                    if do_place_torches and current_light_level <= 0:
+                    target_light: int
+                    if first_torch:
+                        target_light = 0
+                        first_torch = False
+                    else:
+                        target_light = -torch_light
+
+                    if do_place_torches and current_light_level <= target_light:
                         try:
                             await self.place_torch()
                         except InventoryException:
@@ -525,8 +533,7 @@ class StripTurtle(Turtle):
                             do_place_torches = False
                         else:
                             # place success
-                            # we want torch light to meet in the middle of 2 torches, so multiply by 2
-                            current_light_level = torch_light * 2
+                            current_light_level = torch_light
 
                     # we don't need to dig move because we already mined the blocks
                     await self.move(Direction.FORWARD)
