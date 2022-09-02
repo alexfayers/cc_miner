@@ -41,6 +41,10 @@ class Turtle(EnforceOverrides):
     """The range of slots that can be used to store items."""
     _latest_command: str = ""
     """The latest command that the turtle has attempted to execute."""
+    _latest_fuel: int = 0
+    """The latest fuel level of the turtle."""
+    _steps_from_home: int = 0
+    """The amount of blocks away from home the turtle is."""
 
     def __init__(self, uid: int, socket: WebSocketServerProtocol) -> None:
         """Initialise a turtle representation.
@@ -93,9 +97,11 @@ class Turtle(EnforceOverrides):
     async def check_fuel(self) -> None:
         """Check if the turtle has enough fuel to move."""
         fuel = await self.get_fuel()
+        self._latest_fuel = fuel
         steps_to_get_back = await self.move_to_location(
             self._home_location, cost_calculation=True
         )
+        self._steps_from_home = steps_to_get_back
 
         if steps_to_get_back >= fuel:
             self._logger.warning(
@@ -397,9 +403,10 @@ class Turtle(EnforceOverrides):
     async def get_status(self) -> str:
         """Create a status update string."""
         status_string = f"""
-            Position:       {self.position.location}
-            Fuel:           {await self.get_fuel()}
-            Latest Command: {self._latest_command}
+            Position:        {self.position.location}
+            Fuel:            {self._latest_fuel}
+            Latest Command:  {self._latest_command}
+            Blocks from Home: {self._steps_from_home}
         """
 
         status_string_clean = ""
@@ -502,7 +509,7 @@ class StripTurtle(Turtle):
     async def get_status(self) -> str:
         """Create a status update string."""
         output = await super().get_status()
-        output += f"Light Level:    {self.current_light_level}\n"
+        output += f"Light Level:     {self.current_light_level}\n"
         return output
 
     @overrides
