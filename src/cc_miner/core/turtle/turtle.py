@@ -452,19 +452,33 @@ class QuarryTurtle(Turtle):
 class StripTurtle(Turtle):
     """A turtle that can mine a stripmine."""
 
+    async def place_torch(self) -> None:
+        """Try to place a torch above the turtle."""
+        try:
+            await self.inventory_select("torch")
+        except InventoryException:
+            self._logger.error("Ran out of torches.")
+            raise
+        else:
+            await self.place_block(Direction.UP)
+
     @overrides
     async def start(self) -> None:
         """The main turtle process."""
         # blocks to leave between each branch
-        branch_spacing = 3
+        branch_spacing: int = 3
         # number of blocks to mine in each branch
-        branch_length = 20
+        branch_length: int = 47
         # total number of pairs of branches
-        branch_pair_count = 5
+        branch_pair_count: int = 1
         # check if enough fuel before mining
         prerun_fuel_check: bool = True
         # whether to place torches in the stripmine
-        do_place_torches = True
+        do_place_torches: bool = True
+        # amount of blocks that torch light travels
+        torch_light: int = 12
+        # current light level on the turtle
+        current_light_level: int
 
         if prerun_fuel_check:
             required_fuel: int = (
@@ -501,18 +515,43 @@ class StripTurtle(Turtle):
                 await self.turn_right()
                 await self.turn_right()
 
+                first_torch = True
+                current_light_level = torch_light
                 for branch_position in range(branch_length):
+                    # place torches if necessary
+                    target_light: int = 0 if first_torch else -(torch_light + 1)
+
+                    if do_place_torches and current_light_level <= target_light:
+                        if first_torch:
+                            first_torch = False
+
+                        try:
+                            await self.place_torch()
+                        except InventoryException:
+                            # place failed
+                            do_place_torches = False
+                        else:
+                            # place success
+                            current_light_level = torch_light
+
                     # we don't need to dig move because we already mined the blocks
-                    if do_place_torches:
-                        if branch_position % 15 == 0:
-                            try:
-                                await self.inventory_select("torch")
-                            except InventoryException:
-                                self._logger.error("Ran out of torches.")
-                                do_place_torches = False
-                            else:
-                                await self.place_block(Direction.UP)
                     await self.move(Direction.FORWARD)
+                    current_light_level -= 1  # decrease light level because we moved
+
+                    # at end of branch if there's not enough light, slap a torch down
+                    if (
+                        branch_position == (branch_length - 2)
+                        and do_place_torches
+                        and current_light_level <= -1
+                    ):
+                        try:
+                            await self.place_torch()
+                        except InventoryException:
+                            # place failed
+                            do_place_torches = False
+                        else:
+                            # place success
+                            current_light_level = torch_light
 
             # face forward again to prepare for next branch pair
             await self.turn_right()
