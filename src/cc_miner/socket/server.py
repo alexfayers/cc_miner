@@ -126,9 +126,13 @@ class SocketServer:
         logging.getLogger("cc_miner").setLevel(logging.WARNING)
         while True:
             system("clear")  # clear the screen
-            for turtle in self.clients:
-                output = await turtle.get_status()
-                print(f"Turtle #{turtle.uid}:\n{output}\n\n")
+            if self.clients:
+                print(f"{len(self.clients)} active turtles:\n\n")
+                for turtle in self.clients:
+                    output = await turtle.get_status()
+                    print(f"Turtle #{turtle.uid}:\n{output}\n\n")
+            else:
+                print("No active turtles...")
             await asyncio.sleep(0.1)
 
     def start(self) -> None:
