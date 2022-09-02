@@ -518,7 +518,7 @@ class StripTurtle(Turtle):
                 current_light_level = torch_light
                 for branch_position in range(branch_length):
                     # place torches if necessary
-                    target_light: int = 0 if first_torch else -torch_light
+                    target_light: int = 0 if first_torch else -(torch_light + 1)
 
                     if do_place_torches and current_light_level <= target_light:
                         if first_torch:
