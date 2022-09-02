@@ -451,6 +451,7 @@ class QuarryTurtle(Turtle):
 
 class StripTurtle(Turtle):
     """A turtle that can mine a stripmine."""
+
     async def place_torch(self) -> None:
         """Try to place a torch above the turtle."""
         try:
@@ -538,7 +539,11 @@ class StripTurtle(Turtle):
                     current_light_level -= 1  # decrease light level because we moved
 
                     # at end of branch if there's not enough light, slap a torch down
-                    if branch_position == (branch_length - 2) and do_place_torches and current_light_level <= -1:
+                    if (
+                        branch_position == (branch_length - 2)
+                        and do_place_torches
+                        and current_light_level <= -1
+                    ):
                         try:
                             await self.place_torch()
                         except InventoryException:
