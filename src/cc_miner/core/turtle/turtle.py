@@ -517,7 +517,7 @@ class StripTurtle(Turtle):
                 current_light_level = torch_light - 1
                 for branch_position in range(branch_length):
                     # place torches if necessary
-                    if do_place_torches and current_light_level <= 0:
+                    if do_place_torches and current_light_level <= -torch_light:
                         try:
                             await self.place_torch()
                         except InventoryException:
