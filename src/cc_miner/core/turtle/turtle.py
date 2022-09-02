@@ -39,6 +39,8 @@ class Turtle(EnforceOverrides):
     """The location that the `Turtle` will move to on completion."""
     _slot_range = range(1, 17)  # 1-16
     """The range of slots that can be used to store items."""
+    _latest_command: str = ""
+    """The latest command that the turtle has attempted to execute."""
 
     def __init__(self, uid: int, socket: WebSocketServerProtocol) -> None:
         """Initialise a turtle representation.
@@ -73,14 +75,18 @@ class Turtle(EnforceOverrides):
         if "return" not in command:
             raise CommandException("Command must return a value.")
 
+        self._latest_command = f"{command} (PENDING)"
+
         self._logger.debug("Sending command: %s", command)
         await self.socket.send(CommandMessage(command=command).json())
         res_raw = await self.socket.recv()
         self._logger.debug("Received response: %s", res_raw)
         res = CommandResponse.parse_raw(res_raw)
         if res.status is True:
+            self._latest_command = f"{command} (SUCCESS)"
             self._logger.info("Command successful")
         else:
+            self._latest_command = f"{command} (FAILURE)"
             self._logger.error("Command failed")
         return res
 
@@ -387,6 +393,21 @@ class Turtle(EnforceOverrides):
 
         if not res.status:
             raise InteractionException("Failed to place block.")
+
+    async def get_status(self) -> str:
+        """Create a status update string."""
+        status_string = f"""
+            Position:       {self.position.location} {self.position.bearing}
+            Fuel:           {self.get_fuel()}
+            Latest Command: {self._latest_command}
+        """
+
+        status_string_clean = ""
+
+        for line in status_string.splitlines():
+            status_string_clean += line.strip() + "\n"
+
+        return status_string_clean
 
     async def _process_complete(self) -> None:
         """Called on completion of processing."""

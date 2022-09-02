@@ -118,11 +118,22 @@ class SocketServer:
         else:
             raise await self.error(websocket, f"Unexpected event type: {event.json()}")
 
+    async def output_statuses(self) -> None:
+        """Output the status of all active turtles."""
+        logging.getLogger("cc_miner").setLevel(logging.WARNING)
+        while True:
+            for turtle in self.clients:
+                output = await turtle.get_status()
+                print(f"Turtle #{turtle.uid}:\n{output}\n\n")
+            await asyncio.sleep(1)
+
     def start(self) -> None:
         """Start the server."""
         asyncio.get_event_loop().run_until_complete(
             websockets.serve(self.handler, self.host, self.port)  # type: ignore
         )
+
+        asyncio.get_event_loop().run_until_complete(self.output_statuses())
 
         try:
             asyncio.get_event_loop().run_forever()
