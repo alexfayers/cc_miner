@@ -11,6 +11,9 @@ from websockets.server import WebSocketServerProtocol
 from ..core.turtle import StripTurtle, Turtle
 from .types import CommandResponse, DataMessage, ErrorMessage, RegisterMessage
 
+from os import system
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -122,10 +125,11 @@ class SocketServer:
         """Output the status of all active turtles."""
         logging.getLogger("cc_miner").setLevel(logging.WARNING)
         while True:
+            system("clear")  # clear the screen
             for turtle in self.clients:
                 output = await turtle.get_status()
                 print(f"Turtle #{turtle.uid}:\n{output}\n\n")
-            await asyncio.sleep(1)
+            await asyncio.sleep(0.1)
 
     def start(self) -> None:
         """Start the server."""
