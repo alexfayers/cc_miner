@@ -45,6 +45,11 @@ class Turtle(EnforceOverrides):
     """The latest fuel level of the turtle."""
     _steps_from_home: int = 0
     """The amount of blocks away from home the turtle is."""
+    _bad_blocks: List[str] = [
+        "cobble",
+        "dirt"
+    ]
+    """The list of block types to discard during mining."""
 
     def __init__(self, uid: int, socket: WebSocketServerProtocol) -> None:
         """Initialise a turtle representation.
@@ -361,13 +366,15 @@ class Turtle(EnforceOverrides):
             await self.inventory_select(search)
         except InventoryException:
             self._logger.debug("Didn't drop %s", search)
-            return
+            raise InventoryException("No items to drop.")
 
         # found item
         try:
             await self.drop_item(direction)
         except InteractionException:
             self._logger.debug("Couldn't drop %s", search)
+            raise InventoryException("Failed to drop.")
+
         self._logger.info("Dropped %s", search)
 
     async def inventory_select(self, search: str) -> None:
@@ -538,11 +545,6 @@ class StripTurtle(Turtle):
     """amount of blocks that torch light travels"""
     current_light_level: int = 0
     """current light level on the turtle"""
-    bad_blocks: List[str] = [
-        "cobble",
-        "dirt"
-    ]
-    """The list of block types to discard during mining."""
 
     async def place_torch(self) -> None:
         """Try to place a torch above the turtle."""
@@ -600,10 +602,14 @@ class StripTurtle(Turtle):
                 await self.turn_right()
 
                 # dump inventory of trash
-
-                for bad_block in self.bad_blocks:
-                    self._logger.info(f"Dumping {bad_block} blocks.")
-                    await self.inventory_dump(bad_block, Direction.UP)
+                for bad_block in self._bad_blocks:
+                    did_drop: bool = True
+                    while did_drop:
+                        self._logger.info(f"Dumping {bad_block} blocks.")
+                        try:
+                            await self.inventory_dump(bad_block, Direction.UP)
+                        except InventoryException:
+                            did_drop = False
 
                 # start lighting and heading back
                 first_torch = True
