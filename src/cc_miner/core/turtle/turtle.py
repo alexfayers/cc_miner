@@ -717,8 +717,8 @@ class StripTurtle(Turtle):
                             # place success
                             self.current_light_level = self.torch_light
 
-                    # we don't need to dig move because we already mined the blocks
-                    await self.move(Direction.FORWARD)
+                    await self.falling_block_check()
+                    await self.dig_move(Direction.FORWARD)
                     self.current_light_level -= (
                         1  # decrease light level because we moved
                     )
