@@ -618,7 +618,10 @@ class StripTurtle(Turtle):
 
         while True:
             data = await self.inspect(Direction.FORWARD)
-            name = data.get("name", "")
+            if data == {}:
+                break
+
+            name: str = data.get("name", "")
             if any(
                 falling_block in name for falling_block in falling_blocks
             ):
@@ -655,6 +658,7 @@ class StripTurtle(Turtle):
         for _ in range(self.branch_pair_count):
             # continue main branch
             for _ in range(self.branch_spacing + 1):
+                await self.falling_block_check()
                 await self.dig_move(Direction.FORWARD)
                 await self.dig(Direction.UP)
 
@@ -665,6 +669,7 @@ class StripTurtle(Turtle):
             await self.turn_left()
             for _ in range(2):
                 for _ in range(self.branch_length):
+                    await self.falling_block_check()
                     await self.dig_move(Direction.FORWARD)
                     await self.dig(Direction.UP)
 
