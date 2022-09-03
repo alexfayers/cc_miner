@@ -661,7 +661,11 @@ class StripTurtle(Turtle):
                 await self.dig(Direction.UP)
 
             # update home location current point on main branch
-            self._home_location = self.position.location
+            self._home_location = Location(
+                x=self.position.location.x,
+                y=self.position.location.y,
+                z=self.position.location.z,
+            )
 
             # mine left branch
             await self.turn_left()
