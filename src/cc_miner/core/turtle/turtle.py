@@ -483,7 +483,15 @@ class Turtle(EnforceOverrides):
                         "Fuel level is above the threshold of %s.", target_fuel_level
                     )
                     return
-        # not enough fuel left
+        # double check fuel
+        fuel = await self.get_fuel()
+
+        if fuel > target_fuel_level or fuel >= FUEL_LIMIT:
+            self._logger.info(
+                "Fuel level is above the threshold of %s.", target_fuel_level
+            )
+            return
+
         raise InventoryException("Not enough fuel.")
 
     async def get_status(self) -> str:
@@ -534,10 +542,7 @@ class QuarryTurtle(Turtle):
                 xz_size * xz_size * y_size + xz_size * 2 + y_size
             ) // 80 + 1
 
-            try:
-                await self.refuel(required_fuel)
-            except (InventoryException, ValueError):
-                pass
+            await self.refuel(required_fuel)
 
             current_fuel = await self.get_fuel()
             if current_fuel < required_fuel:
