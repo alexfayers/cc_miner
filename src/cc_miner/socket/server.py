@@ -11,6 +11,9 @@ from websockets.server import WebSocketServerProtocol
 from ..core.turtle import StripTurtle, Turtle
 from .types import CommandResponse, DataMessage, ErrorMessage, RegisterMessage
 
+from os import system
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -118,11 +121,27 @@ class SocketServer:
         else:
             raise await self.error(websocket, f"Unexpected event type: {event.json()}")
 
+    async def output_statuses(self) -> None:
+        """Output the status of all active turtles."""
+        logging.getLogger("cc_miner").setLevel(logging.WARNING)
+        while True:
+            system("clear")  # clear the screen
+            if self.clients:
+                print(f"{len(self.clients)} active turtles:\n\n")
+                for turtle in self.clients:
+                    output = await turtle.get_status()
+                    print(f"Turtle #{turtle.uid}:\n{output}\n\n")
+            else:
+                print("No active turtles...")
+            await asyncio.sleep(0.1)
+
     def start(self) -> None:
         """Start the server."""
         asyncio.get_event_loop().run_until_complete(
             websockets.serve(self.handler, self.host, self.port)  # type: ignore
         )
+
+        asyncio.get_event_loop().run_until_complete(self.output_statuses())
 
         try:
             asyncio.get_event_loop().run_forever()

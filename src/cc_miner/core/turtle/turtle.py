@@ -39,6 +39,12 @@ class Turtle(EnforceOverrides):
     """The location that the `Turtle` will move to on completion."""
     _slot_range = range(1, 17)  # 1-16
     """The range of slots that can be used to store items."""
+    _latest_command: str = ""
+    """The latest command that the turtle has attempted to execute."""
+    _latest_fuel: int = 0
+    """The latest fuel level of the turtle."""
+    _steps_from_home: int = 0
+    """The amount of blocks away from home the turtle is."""
 
     def __init__(self, uid: int, socket: WebSocketServerProtocol) -> None:
         """Initialise a turtle representation.
@@ -73,23 +79,29 @@ class Turtle(EnforceOverrides):
         if "return" not in command:
             raise CommandException("Command must return a value.")
 
+        self._latest_command = f"{command} (PENDING)"
+
         self._logger.debug("Sending command: %s", command)
         await self.socket.send(CommandMessage(command=command).json())
         res_raw = await self.socket.recv()
         self._logger.debug("Received response: %s", res_raw)
         res = CommandResponse.parse_raw(res_raw)
         if res.status is True:
+            self._latest_command = f"{command} (SUCCESS)"
             self._logger.info("Command successful")
         else:
+            self._latest_command = f"{command} (FAILURE)"
             self._logger.error("Command failed")
         return res
 
     async def check_fuel(self) -> None:
         """Check if the turtle has enough fuel to move."""
         fuel = await self.get_fuel()
+        self._latest_fuel = fuel
         steps_to_get_back = await self.move_to_location(
             self._home_location, cost_calculation=True
         )
+        self._steps_from_home = steps_to_get_back
 
         if steps_to_get_back >= fuel:
             self._logger.warning(
@@ -388,6 +400,22 @@ class Turtle(EnforceOverrides):
         if not res.status:
             raise InteractionException("Failed to place block.")
 
+    async def get_status(self) -> str:
+        """Create a status update string."""
+        status_string = f"""
+            Position:        {self.position.location}
+            Fuel:            {self._latest_fuel}
+            Latest Command:  {self._latest_command}
+            Blocks from Home: {self._steps_from_home}
+        """
+
+        status_string_clean = ""
+
+        for line in status_string.splitlines():
+            status_string_clean += line.strip() + "\n"
+
+        return status_string_clean
+
     async def _process_complete(self) -> None:
         """Called on completion of processing."""
         self._check_fuel = False
@@ -452,6 +480,21 @@ class QuarryTurtle(Turtle):
 class StripTurtle(Turtle):
     """A turtle that can mine a stripmine."""
 
+    branch_spacing: int = 3
+    """blocks to leave between each branch"""
+    branch_length: int = 47
+    """number of blocks to mine in each branch"""
+    branch_pair_count: int = 8
+    """total number of pairs of branches"""
+    prerun_fuel_check: bool = True
+    """check if enough fuel before mining"""
+    do_place_torches: bool = True
+    """whether to place torches in the stripmine"""
+    torch_light: int = 12
+    """amount of blocks that torch light travels"""
+    current_light_level: int = 0
+    """current light level on the turtle"""
+
     async def place_torch(self) -> None:
         """Try to place a torch above the turtle."""
         try:
@@ -463,41 +506,33 @@ class StripTurtle(Turtle):
             await self.place_block(Direction.UP)
 
     @overrides
+    async def get_status(self) -> str:
+        """Create a status update string."""
+        output = await super().get_status()
+        output += f"Light Level:     {self.current_light_level}\n"
+        return output
+
+    @overrides
     async def start(self) -> None:
         """The main turtle process."""
-        # blocks to leave between each branch
-        branch_spacing: int = 3
-        # number of blocks to mine in each branch
-        branch_length: int = 47
-        # total number of pairs of branches
-        branch_pair_count: int = 1
-        # check if enough fuel before mining
-        prerun_fuel_check: bool = True
-        # whether to place torches in the stripmine
-        do_place_torches: bool = True
-        # amount of blocks that torch light travels
-        torch_light: int = 12
-        # current light level on the turtle
-        current_light_level: int
-
-        if prerun_fuel_check:
+        if self.prerun_fuel_check:
             required_fuel: int = (
                 (
-                    branch_spacing + 1
+                    self.branch_spacing + 1
                 )  # spacing between branches, plus 1 for the connection between branches
                 + (
-                    branch_length * 4 + 1
+                    self.branch_length * 4 + 1
                 )  # length of mining each branch and going back to main
-            ) * branch_pair_count
+            ) * self.branch_pair_count
             current_fuel = await self.get_fuel()
             if current_fuel < required_fuel:
                 raise HaltException(
                     f"Not enough fuel to complete trip. Need {required_fuel - current_fuel} more."
                 )
 
-        for _ in range(branch_pair_count):
+        for _ in range(self.branch_pair_count):
             # continue main branch
-            for _ in range(branch_spacing + 1):
+            for _ in range(self.branch_spacing + 1):
                 await self.dig_move(Direction.FORWARD)
                 await self.dig(Direction.UP)
 
@@ -507,7 +542,7 @@ class StripTurtle(Turtle):
             # mine left branch
             await self.turn_left()
             for _ in range(2):
-                for _ in range(branch_length):
+                for _ in range(self.branch_length):
                     await self.dig_move(Direction.FORWARD)
                     await self.dig(Direction.UP)
 
@@ -516,12 +551,12 @@ class StripTurtle(Turtle):
                 await self.turn_right()
 
                 first_torch = True
-                current_light_level = torch_light
-                for branch_position in range(branch_length):
+                self.current_light_level = self.torch_light
+                for branch_position in range(self.branch_length):
                     # place torches if necessary
-                    target_light: int = 0 if first_torch else -(torch_light + 1)
+                    target_light: int = 0 if first_torch else -(self.torch_light + 1)
 
-                    if do_place_torches and current_light_level <= target_light:
+                    if self.do_place_torches and self.current_light_level <= target_light:
                         if first_torch:
                             first_torch = False
 
@@ -529,29 +564,29 @@ class StripTurtle(Turtle):
                             await self.place_torch()
                         except InventoryException:
                             # place failed
-                            do_place_torches = False
+                            self.do_place_torches = False
                         else:
                             # place success
-                            current_light_level = torch_light
+                            self.current_light_level = self.torch_light
 
                     # we don't need to dig move because we already mined the blocks
                     await self.move(Direction.FORWARD)
-                    current_light_level -= 1  # decrease light level because we moved
+                    self.current_light_level -= 1  # decrease light level because we moved
 
                     # at end of branch if there's not enough light, slap a torch down
                     if (
-                        branch_position == (branch_length - 2)
-                        and do_place_torches
-                        and current_light_level <= -1
+                        branch_position == (self.branch_length - 2)
+                        and self.do_place_torches
+                        and self.current_light_level <= -1
                     ):
                         try:
                             await self.place_torch()
                         except InventoryException:
                             # place failed
-                            do_place_torches = False
+                            self.do_place_torches = False
                         else:
                             # place success
-                            current_light_level = torch_light
+                            self.current_light_level = self.torch_light
 
             # face forward again to prepare for next branch pair
             await self.turn_right()
