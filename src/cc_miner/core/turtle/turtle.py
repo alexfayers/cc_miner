@@ -613,6 +613,12 @@ class StripTurtle(Turtle):
                     self.branch_length * 4 + 1
                 )  # length of mining each branch and going back to main
             ) * self.branch_pair_count
+
+            try:
+                await self.refuel(required_fuel)
+            except (InventoryException, ValueError):
+                pass
+
             current_fuel = await self.get_fuel()
             if current_fuel < required_fuel:
                 raise HaltException(
@@ -703,4 +709,4 @@ class TestTurtle(StripTurtle):
     @overrides
     async def start(self) -> None:
         """The main turtle process."""
-        await self.refuel(100000)
+        await self.refuel(20000)
