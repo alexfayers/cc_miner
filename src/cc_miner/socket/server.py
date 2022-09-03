@@ -9,7 +9,7 @@ import websockets
 from pydantic import ValidationError
 from websockets.server import WebSocketServerProtocol
 
-from ..core.turtle import StripTurtle, Turtle
+from ..core.turtle import TestTurtle, Turtle
 from .types import CommandResponse, DataMessage, ErrorMessage, RegisterMessage
 
 logger = logging.getLogger(__name__)
@@ -19,7 +19,7 @@ class SocketServer:
     """A websocket server which communicates with turtles."""
 
     clients: Set[Turtle] = set()
-    mining_type: Type[Turtle] = StripTurtle
+    mining_type: Type[Turtle] = TestTurtle
 
     def __init__(self, host: str, port: int) -> None:
         """Initialise the server.
