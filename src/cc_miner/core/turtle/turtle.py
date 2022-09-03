@@ -708,6 +708,9 @@ class StripTurtle(Turtle):
                         except InventoryException:
                             # place failed
                             self.do_place_torches = False
+                        except InteractionException:
+                            # place failed because no blocks to place on
+                            pass
                         else:
                             # place success
                             self.current_light_level = self.torch_light
@@ -729,6 +732,9 @@ class StripTurtle(Turtle):
                         except InventoryException:
                             # place failed
                             self.do_place_torches = False
+                        except InteractionException:
+                            # place failed because no blocks to place on
+                            pass
                         else:
                             # place success
                             self.current_light_level = self.torch_light
