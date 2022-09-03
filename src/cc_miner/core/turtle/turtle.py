@@ -618,6 +618,7 @@ class StripTurtle(Turtle):
 
         while True:
             data = await self.inspect(Direction.FORWARD)
+            self._logger.debug(data)
             name = data.get("name ", "")
             print(name)
             if any(
