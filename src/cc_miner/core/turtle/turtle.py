@@ -533,6 +533,12 @@ class QuarryTurtle(Turtle):
             required_fuel: int = (
                 xz_size * xz_size * y_size + xz_size * 2 + y_size
             ) // 80 + 1
+
+            try:
+                await self.refuel(required_fuel)
+            except (InventoryException, ValueError):
+                pass
+
             current_fuel = await self.get_fuel()
             if current_fuel < required_fuel:
                 raise HaltException(
