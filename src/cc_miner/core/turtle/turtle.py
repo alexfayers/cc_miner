@@ -50,6 +50,10 @@ class Turtle(EnforceOverrides):
         "dirt"
     ]
     """The list of block types to discard during mining."""
+    _fuel_blocks: List[str] = [
+        "coal"
+    ]
+    """The list of block/item types to use for fuel."""
 
     def __init__(self, uid: int, socket: WebSocketServerProtocol) -> None:
         """Initialise a turtle representation.
@@ -451,6 +455,33 @@ class Turtle(EnforceOverrides):
         if not res.status:
             raise InteractionException("Failed to drop item.")
 
+    async def refuel(self, target_fuel_level: int) -> None:
+        """Refuel the turtle until the fuel level is above the threshold or the fuel sources run out.
+
+        Args:
+            target_fuel_level (int): The target fuel level.
+
+        Raises:
+            InventoryException: If the turtle has no fuel sources remaining.
+        """
+        for fuel_type in self._fuel_blocks:
+            while True:
+                try:
+                    await self.inventory_select(fuel_type)
+                except InventoryException:
+                    self._logger.debug("No more %s", fuel_type)
+                    break
+
+                await self._command("return turtle.refuel()")
+
+                fuel = await self.get_fuel()
+
+                if fuel > target_fuel_level:
+                    self._logger.info("Fuel level is above the threshold of %s.", target_fuel_level)
+                    return
+        # not enough fuel left
+        raise InventoryException("Not enough fuel.")
+
     async def get_status(self) -> str:
         """Create a status update string."""
         status_string = f"""
@@ -659,11 +690,10 @@ class StripTurtle(Turtle):
             await self.turn_right()
 
 
-class TestTurtle(Turtle):
+class TestTurtle(StripTurtle):
     """A turtle to test out features."""
 
     @overrides
     async def start(self) -> None:
         """The main turtle process."""
-        await self.inventory_select("torch")
-        await self.place_block(Direction.UP)
+        await self.refuel(100000)
