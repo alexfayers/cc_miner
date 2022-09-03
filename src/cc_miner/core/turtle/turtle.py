@@ -1,7 +1,7 @@
 """Representation of a CC turtle."""
 
 import logging
-from typing import Any, Dict, cast
+from typing import Any, Dict, List, cast
 
 from overrides import EnforceOverrides, overrides
 from websockets.server import WebSocketServerProtocol
@@ -18,6 +18,9 @@ from .exceptions import (
 from .types import Bearing, Direction, InventorySlotInfo, Location, Position
 
 logger = cast(SuccessLogger, logging.getLogger(__name__))
+
+
+FUEL_LIMIT = 20000
 
 
 class Turtle(EnforceOverrides):
@@ -45,6 +48,10 @@ class Turtle(EnforceOverrides):
     """The latest fuel level of the turtle."""
     _steps_from_home: int = 0
     """The amount of blocks away from home the turtle is."""
+    _bad_blocks: List[str] = ["cobble", "dirt", "gravel"]
+    """The list of block types to discard during mining."""
+    _fuel_blocks: List[str] = ["coal"]
+    """The list of block/item types to use for fuel."""
 
     def __init__(self, uid: int, socket: WebSocketServerProtocol) -> None:
         """Initialise a turtle representation.
@@ -350,6 +357,28 @@ class Turtle(EnforceOverrides):
 
         return movement_cost
 
+    async def inventory_dump(self, search: str, direction: Direction) -> None:
+        """Drop any items that match a specific search string.
+
+        Args:
+            search (str): The item to search for.
+            direction (Direction): The direction to search in.
+        """
+        try:
+            await self.inventory_select(search)
+        except InventoryException:
+            self._logger.debug("Didn't drop %s", search)
+            raise InventoryException("No items to drop.")
+
+        # found item
+        try:
+            await self.drop_item(direction)
+        except InteractionException:
+            self._logger.debug("Couldn't drop %s", search)
+            raise InventoryException("Failed to drop.")
+
+        self._logger.info("Dropped %s", search)
+
     async def inventory_select(self, search: str) -> None:
         """Select an item from the turtle's inventory.
 
@@ -400,6 +429,71 @@ class Turtle(EnforceOverrides):
         if not res.status:
             raise InteractionException("Failed to place block.")
 
+    async def drop_item(self, direction: Direction) -> None:
+        """Drop the currently selected item in a direction.
+
+        Args:
+            direction (Direction): The direction to drop the item.
+
+        Raises:
+            CommandException: If the direction was not valid.
+        """
+        if direction == Direction.FORWARD:
+            self._logger.info("Dropping in front")
+            res = await self._command("return turtle.drop()")
+        elif direction == Direction.DOWN:
+            self._logger.info("Dropping below")
+            res = await self._command("return turtle.dropDown()")
+        elif direction == Direction.UP:
+            self._logger.info("Dropping above")
+            res = await self._command("return turtle.dropUp()")
+        else:
+            raise CommandException("Bad direction.")
+
+        if not res.status:
+            raise InteractionException("Failed to drop item.")
+
+    async def refuel(self, target_fuel_level: int) -> None:
+        """Refuel the turtle until the fuel level is above the threshold or the fuel sources run out.
+
+        Args:
+            target_fuel_level (int): The target fuel level.
+
+        Raises:
+            InventoryException: If the turtle has no fuel sources remaining.
+            ValueError: If the target fuel level is not between 0 and 100.
+        """
+        if 0 < target_fuel_level < FUEL_LIMIT:
+            raise ValueError(f"Target fuel level must be between 0 and {FUEL_LIMIT}.")
+
+        for fuel_type in self._fuel_blocks:
+            while True:
+                try:
+                    await self.inventory_select(fuel_type)
+                except InventoryException:
+                    self._logger.debug("No more %s", fuel_type)
+                    break
+
+                await self._command("return turtle.refuel()")
+
+                fuel = await self.get_fuel()
+
+                if fuel > target_fuel_level or fuel >= FUEL_LIMIT:
+                    self._logger.info(
+                        "Fuel level is above the threshold of %s.", target_fuel_level
+                    )
+                    return
+        # double check fuel
+        fuel = await self.get_fuel()
+
+        if fuel > target_fuel_level or fuel >= FUEL_LIMIT:
+            self._logger.info(
+                "Fuel level is above the threshold of %s.", target_fuel_level
+            )
+            return
+
+        raise InventoryException("Not enough fuel.")
+
     async def get_status(self) -> str:
         """Create a status update string."""
         status_string = f"""
@@ -447,6 +541,9 @@ class QuarryTurtle(Turtle):
             required_fuel: int = (
                 xz_size * xz_size * y_size + xz_size * 2 + y_size
             ) // 80 + 1
+
+            await self.refuel(required_fuel)
+
             current_fuel = await self.get_fuel()
             if current_fuel < required_fuel:
                 raise HaltException(
@@ -524,6 +621,12 @@ class StripTurtle(Turtle):
                     self.branch_length * 4 + 1
                 )  # length of mining each branch and going back to main
             ) * self.branch_pair_count
+
+            try:
+                await self.refuel(required_fuel)
+            except (InventoryException, ValueError):
+                pass
+
             current_fuel = await self.get_fuel()
             if current_fuel < required_fuel:
                 raise HaltException(
@@ -550,6 +653,17 @@ class StripTurtle(Turtle):
                 await self.turn_right()
                 await self.turn_right()
 
+                # dump inventory of trash
+                for bad_block in self._bad_blocks:
+                    did_drop: bool = True
+                    while did_drop:
+                        self._logger.info(f"Dumping {bad_block} blocks.")
+                        try:
+                            await self.inventory_dump(bad_block, Direction.UP)
+                        except InventoryException:
+                            did_drop = False
+
+                # start lighting and heading back
                 first_torch = True
                 self.current_light_level = self.torch_light
                 for branch_position in range(self.branch_length):
@@ -597,11 +711,10 @@ class StripTurtle(Turtle):
             await self.turn_right()
 
 
-class TestTurtle(Turtle):
+class TestTurtle(StripTurtle):
     """A turtle to test out features."""
 
     @overrides
     async def start(self) -> None:
         """The main turtle process."""
-        await self.inventory_select("torch")
-        await self.place_block(Direction.UP)
+        await self.refuel(20000)

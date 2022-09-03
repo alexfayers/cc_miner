@@ -131,7 +131,7 @@ class SocketServer:
                     print(f"Turtle #{turtle.uid}:\n{output}\n\n")
             else:
                 print("No active turtles...")
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.5)
 
     def start(self) -> None:
         """Start the server."""
@@ -139,7 +139,7 @@ class SocketServer:
             websockets.serve(self.handler, self.host, self.port)  # type: ignore
         )
 
-        asyncio.get_event_loop().run_until_complete(self.output_statuses())
+        # asyncio.get_event_loop().run_until_complete(self.output_statuses())
 
         try:
             asyncio.get_event_loop().run_forever()
