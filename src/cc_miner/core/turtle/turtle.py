@@ -622,9 +622,7 @@ class StripTurtle(Turtle):
                 break
 
             name: str = data.get("name", "")
-            if any(
-                falling_block in name for falling_block in falling_blocks
-            ):
+            if any(falling_block in name for falling_block in falling_blocks):
                 self._logger.debug("Block is falling block, mining it.")
                 await self.dig(Direction.FORWARD)
             else:
