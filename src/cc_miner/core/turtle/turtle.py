@@ -1,7 +1,7 @@
 """Representation of a CC turtle."""
 
 import logging
-from typing import Any, Dict, cast
+from typing import Any, Dict, List, cast
 
 from overrides import EnforceOverrides, overrides
 from websockets.server import WebSocketServerProtocol
@@ -350,6 +350,26 @@ class Turtle(EnforceOverrides):
 
         return movement_cost
 
+    async def inventory_dump(self, search: str, direction: Direction) -> None:
+        """Drop any items that match a specific search string.
+
+        Args:
+            search (str): The item to search for.
+            direction (Direction): The direction to search in.
+        """
+        try:
+            await self.inventory_select(search)
+        except InventoryException:
+            self._logger.debug("Didn't drop %s", search)
+            return
+
+        # found item
+        try:
+            await self.drop_item(direction)
+        except InteractionException:
+            self._logger.debug("Couldn't drop %s", search)
+        self._logger.info("Dropped %s", search)
+
     async def inventory_select(self, search: str) -> None:
         """Select an item from the turtle's inventory.
 
@@ -399,6 +419,30 @@ class Turtle(EnforceOverrides):
 
         if not res.status:
             raise InteractionException("Failed to place block.")
+
+    async def drop_item(self, direction: Direction) -> None:
+        """Drop the currently selected item in a direction.
+
+        Args:
+            direction (Direction): The direction to drop the item.
+
+        Raises:
+            CommandException: If the direction was not valid.
+        """
+        if direction == Direction.FORWARD:
+            self._logger.info("Dropping in front")
+            res = await self._command("return turtle.drop()")
+        elif direction == Direction.DOWN:
+            self._logger.info("Dropping below")
+            res = await self._command("return turtle.dropDown()")
+        elif direction == Direction.UP:
+            self._logger.info("Dropping above")
+            res = await self._command("return turtle.dropUp()")
+        else:
+            raise CommandException("Bad direction.")
+
+        if not res.status:
+            raise InteractionException("Failed to drop item.")
 
     async def get_status(self) -> str:
         """Create a status update string."""
@@ -494,6 +538,11 @@ class StripTurtle(Turtle):
     """amount of blocks that torch light travels"""
     current_light_level: int = 0
     """current light level on the turtle"""
+    bad_blocks: List[str] = [
+        "cobble",
+        "dirt"
+    ]
+    """The list of block types to discard during mining."""
 
     async def place_torch(self) -> None:
         """Try to place a torch above the turtle."""
@@ -550,6 +599,13 @@ class StripTurtle(Turtle):
                 await self.turn_right()
                 await self.turn_right()
 
+                # dump inventory of trash
+
+                for bad_block in self.bad_blocks:
+                    self._logger.info(f"Dumping {bad_block} blocks.")
+                    await self.inventory_dump(bad_block, Direction.UP)
+
+                # start lighting and heading back
                 first_torch = True
                 self.current_light_level = self.torch_light
                 for branch_position in range(self.branch_length):
