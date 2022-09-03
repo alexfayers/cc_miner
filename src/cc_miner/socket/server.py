@@ -9,7 +9,7 @@ import websockets
 from pydantic import ValidationError
 from websockets.server import WebSocketServerProtocol
 
-from ..core.turtle import Turtle, StripTurtle
+from ..core.turtle import StripTurtle, Turtle
 from .types import CommandResponse, DataMessage, ErrorMessage, RegisterMessage
 
 logger = logging.getLogger(__name__)

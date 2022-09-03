@@ -48,15 +48,9 @@ class Turtle(EnforceOverrides):
     """The latest fuel level of the turtle."""
     _steps_from_home: int = 0
     """The amount of blocks away from home the turtle is."""
-    _bad_blocks: List[str] = [
-        "cobble",
-        "dirt",
-        "gravel"
-    ]
+    _bad_blocks: List[str] = ["cobble", "dirt", "gravel"]
     """The list of block types to discard during mining."""
-    _fuel_blocks: List[str] = [
-        "coal"
-    ]
+    _fuel_blocks: List[str] = ["coal"]
     """The list of block/item types to use for fuel."""
 
     def __init__(self, uid: int, socket: WebSocketServerProtocol) -> None:
@@ -485,7 +479,9 @@ class Turtle(EnforceOverrides):
                 fuel = await self.get_fuel()
 
                 if fuel > target_fuel_level or fuel >= FUEL_LIMIT:
-                    self._logger.info("Fuel level is above the threshold of %s.", target_fuel_level)
+                    self._logger.info(
+                        "Fuel level is above the threshold of %s.", target_fuel_level
+                    )
                     return
         # not enough fuel left
         raise InventoryException("Not enough fuel.")
