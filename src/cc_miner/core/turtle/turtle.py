@@ -99,7 +99,7 @@ class Turtle(EnforceOverrides):
             self._logger.info("Command successful")
         else:
             self._latest_command = f"{command} (FAILURE)"
-            self._logger.error("Command failed")
+            self._logger.warning(f"{command} command failed")
         return res
 
     async def check_fuel(self) -> None:
@@ -598,7 +598,7 @@ class StripTurtle(Turtle):
         try:
             await self.inventory_select("torch")
         except InventoryException:
-            self._logger.error("Ran out of torches.")
+            self._logger.warning("Ran out of torches.")
             raise
         else:
             await self.place_block(Direction.UP)
