@@ -618,9 +618,7 @@ class StripTurtle(Turtle):
 
         while True:
             data = await self.inspect(Direction.FORWARD)
-            self._logger.debug(data)
-            name = data.get("name ", "")
-            print(data["name"])
+            name = data.get("name", "")
             if any(
                 falling_block in name for falling_block in falling_blocks
             ):
