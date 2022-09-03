@@ -16,6 +16,7 @@ from .exceptions import (
     MovementException,
 )
 from .types import Bearing, Direction, InventorySlotInfo, Location, Position
+import asyncio
 
 logger = cast(SuccessLogger, logging.getLogger(__name__))
 
@@ -625,6 +626,7 @@ class StripTurtle(Turtle):
             if any(falling_block in name for falling_block in falling_blocks):
                 self._logger.debug("Block is falling block, mining it.")
                 await self.dig(Direction.FORWARD)
+                await asyncio.sleep(0.5)  # wait for block to fall if there is any more
             else:
                 self._logger.debug("not falling block.")
                 break
