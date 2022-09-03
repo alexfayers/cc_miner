@@ -131,7 +131,7 @@ class SocketServer:
                     print(f"Turtle #{turtle.uid}:\n{output}\n\n")
             else:
                 print("No active turtles...")
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.5)
 
     def start(self) -> None:
         """Start the server."""
