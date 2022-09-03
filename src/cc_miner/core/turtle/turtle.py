@@ -50,7 +50,8 @@ class Turtle(EnforceOverrides):
     """The amount of blocks away from home the turtle is."""
     _bad_blocks: List[str] = [
         "cobble",
-        "dirt"
+        "dirt",
+        "gravel"
     ]
     """The list of block types to discard during mining."""
     _fuel_blocks: List[str] = [
