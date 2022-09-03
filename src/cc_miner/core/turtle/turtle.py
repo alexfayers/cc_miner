@@ -609,6 +609,24 @@ class StripTurtle(Turtle):
         output += f"Light Level:     {self.current_light_level}\n"
         return output
 
+    async def falling_block_check(self) -> None:
+        """Check if any falling blocks are in front of the turtle and mine until there isn't.
+
+        If there are block above the turtle, they get auto destroyed (like falling on a torch).
+        """
+        falling_blocks = ["gravel", "sand"]
+
+        while True:
+            data = await self.inspect(Direction.FORWARD)
+            name = data.get("name ", "")
+            if any(
+                falling_block in name for falling_block in falling_blocks
+            ):
+                self._logger.debug("Block is falling block, mining it.")
+                await self.dig(Direction.FORWARD)
+            else:
+                break
+
     @overrides
     async def start(self) -> None:
         """The main turtle process."""
@@ -717,4 +735,4 @@ class TestTurtle(StripTurtle):
     @overrides
     async def start(self) -> None:
         """The main turtle process."""
-        await self.refuel(20000)
+        await self.falling_block_check()
