@@ -625,6 +625,7 @@ class StripTurtle(Turtle):
                 self._logger.debug("Block is falling block, mining it.")
                 await self.dig(Direction.FORWARD)
             else:
+                self._logger.debug("not falling block.")
                 break
 
     @overrides
