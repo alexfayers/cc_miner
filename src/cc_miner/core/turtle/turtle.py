@@ -20,6 +20,9 @@ from .types import Bearing, Direction, InventorySlotInfo, Location, Position
 logger = cast(SuccessLogger, logging.getLogger(__name__))
 
 
+FUEL_LIMIT = 20000
+
+
 class Turtle(EnforceOverrides):
     """A representation of, and connection to, a turtle."""
 
@@ -463,7 +466,11 @@ class Turtle(EnforceOverrides):
 
         Raises:
             InventoryException: If the turtle has no fuel sources remaining.
+            ValueError: If the target fuel level is not between 0 and 100.
         """
+        if 0 < target_fuel_level < FUEL_LIMIT:
+            raise ValueError(f"Target fuel level must be between 0 and {FUEL_LIMIT}.")
+
         for fuel_type in self._fuel_blocks:
             while True:
                 try:
@@ -476,7 +483,7 @@ class Turtle(EnforceOverrides):
 
                 fuel = await self.get_fuel()
 
-                if fuel > target_fuel_level:
+                if fuel > target_fuel_level or fuel >= FUEL_LIMIT:
                     self._logger.info("Fuel level is above the threshold of %s.", target_fuel_level)
                     return
         # not enough fuel left
