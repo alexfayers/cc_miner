@@ -556,7 +556,10 @@ class StripTurtle(Turtle):
                     # place torches if necessary
                     target_light: int = 0 if first_torch else -(self.torch_light + 1)
 
-                    if self.do_place_torches and self.current_light_level <= target_light:
+                    if (
+                        self.do_place_torches
+                        and self.current_light_level <= target_light
+                    ):
                         if first_torch:
                             first_torch = False
 
@@ -571,7 +574,9 @@ class StripTurtle(Turtle):
 
                     # we don't need to dig move because we already mined the blocks
                     await self.move(Direction.FORWARD)
-                    self.current_light_level -= 1  # decrease light level because we moved
+                    self.current_light_level -= (
+                        1  # decrease light level because we moved
+                    )
 
                     # at end of branch if there's not enough light, slap a torch down
                     if (

@@ -2,6 +2,7 @@
 import asyncio
 import json
 import logging
+from os import system
 from typing import Set, Type
 
 import websockets
@@ -10,9 +11,6 @@ from websockets.server import WebSocketServerProtocol
 
 from ..core.turtle import StripTurtle, Turtle
 from .types import CommandResponse, DataMessage, ErrorMessage, RegisterMessage
-
-from os import system
-
 
 logger = logging.getLogger(__name__)
 
