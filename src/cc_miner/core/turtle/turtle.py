@@ -49,7 +49,7 @@ class Turtle(EnforceOverrides):
     """The latest fuel level of the turtle."""
     _steps_from_home: int = 0
     """The amount of blocks away from home the turtle is."""
-    _bad_blocks: List[str] = ["cobble", "dirt", "gravel"]
+    _bad_blocks: List[str] = ["cobble", "dirt", "gravel", "tuff"]
     """The list of block types to discard during mining."""
     _fuel_blocks: List[str] = ["coal"]
     """The list of block/item types to use for fuel."""
