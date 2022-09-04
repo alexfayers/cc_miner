@@ -744,6 +744,10 @@ class StripTurtle(Turtle):
             # face forward again to prepare for next branch pair
             await self.turn_right()
 
+        self._home_location = Location(x=0, y=0, z=0)
+
+        await self._process_complete()
+
 
 class TestTurtle(StripTurtle):
     """A turtle to test out features."""
