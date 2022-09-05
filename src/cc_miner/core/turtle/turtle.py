@@ -431,6 +431,36 @@ class Turtle(EnforceOverrides):
                 return
         raise InventoryException("Could not find item.")
 
+    async def peripheral_find(self, peripheral_search: str) -> Any:
+        """Find a peripheral.
+
+        Args:
+            peripheral_search (str): The name to search for.
+
+        Returns:
+            Any: The peripheral
+        """
+        res = await self._command(f"return peripheral.find('{peripheral_search}')")
+        if res.status:
+            return cast(Any, res.data)
+        else:
+            raise CommandException("Failed to get peripheral.")
+
+    async def peripheral_wrap(self, peripheral_name: str) -> Any:
+        """Wrap a peripheral.
+
+        Args:
+            peripheral_name (str): The name of the peripheral.
+
+        Returns:
+            Any: The peripheral.
+        """
+        res = await self._command(f"return peripheral.wrap('{peripheral_name}')")
+        if res.status:
+            return cast(Any, res.data)
+        else:
+            raise CommandException("Failed to get peripheral.")
+
     async def place_block(self, direction: Direction) -> None:
         """Place the currently selected block in a direction.
 
