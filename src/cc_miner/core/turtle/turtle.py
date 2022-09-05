@@ -68,6 +68,9 @@ class Turtle(EnforceOverrides):
         self.uid = uid
         self.socket = socket
         self._logger = cast(SuccessLogger, logging.getLogger(f"{__name__}.{self.uid}"))
+        self._logger.addHandler(
+            logging.FileHandler(f"logs/turtle_{self.uid}.log", mode="w")
+        )
 
     def __repr__(self) -> str:
         """The string representation of the `Turtle` object."""
