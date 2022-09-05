@@ -1,6 +1,7 @@
 """Representation of a CC turtle."""
 
 import logging
+import math
 from typing import Any, Dict, List, cast
 
 from overrides import EnforceOverrides, overrides
@@ -380,6 +381,27 @@ class Turtle(EnforceOverrides):
 
         self._logger.info("Dropped %s", search)
 
+    async def inventory_count(self, search: str) -> int:
+        """Return a count of the search item in the inventory.
+
+        Args:
+            search (str): The search string.add()
+
+        Returns:
+            int: The number of items found.
+        """
+        count = 0
+        for slot in self._slot_range:
+            res = await self._command(f"return turtle.getItemDetail({slot})")
+            if res.data is None:
+                # slot is empty
+                continue
+            details = InventorySlotInfo(**res.data)
+            if search in details.name:
+                count = count + details.count
+
+        return count
+
     async def inventory_select(self, search: str) -> None:
         """Select an item from the turtle's inventory.
 
@@ -626,7 +648,7 @@ class StripTurtle(Turtle):
             if any(falling_block in name for falling_block in falling_blocks):
                 self._logger.debug("Block is falling block, mining it.")
                 await self.dig(Direction.FORWARD)
-                await asyncio.sleep(0.5)  # wait for block to fall if there is any more
+                await asyncio.sleep(1)  # wait for block to fall if there is any more
             else:
                 self._logger.debug("not falling block.")
                 break
@@ -653,6 +675,14 @@ class StripTurtle(Turtle):
             if current_fuel < required_fuel:
                 raise HaltException(
                     f"Not enough fuel to complete trip. Need {required_fuel - current_fuel} more."
+                )
+
+            required_torches: int = math.ceil(self.branch_length // self.torch_light) * self.branch_pair_count
+
+            current_torches = await self.inventory_count('torch')
+            if current_torches < required_torches:
+                raise HaltException(
+                    f"Not enough torches to complete trip. Need {required_torches - current_torches} more."
                 )
 
         for _ in range(self.branch_pair_count):
