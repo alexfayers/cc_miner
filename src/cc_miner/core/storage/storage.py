@@ -19,5 +19,5 @@ class StorageTurtle(Turtle):
     @overrides
     async def start(self) -> None:
         """Main turtle function."""
-        chest = self.peripheral_find("chest")
+        chest = await self.peripheral_find("chest")
         print(chest)
