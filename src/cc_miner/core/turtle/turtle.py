@@ -1,5 +1,6 @@
 """Representation of a CC turtle."""
 
+import asyncio
 import logging
 import math
 from typing import Any, Dict, List, cast
@@ -17,7 +18,6 @@ from .exceptions import (
     MovementException,
 )
 from .types import Bearing, Direction, InventorySlotInfo, Location, Position
-import asyncio
 
 logger = cast(SuccessLogger, logging.getLogger(__name__))
 
@@ -680,9 +680,12 @@ class StripTurtle(Turtle):
                     f"Not enough fuel to complete trip. Need {required_fuel - current_fuel} more."
                 )
 
-            required_torches: int = math.ceil(self.branch_length // self.torch_light) * self.branch_pair_count
+            required_torches: int = (
+                math.ceil(self.branch_length // self.torch_light)
+                * self.branch_pair_count
+            )
 
-            current_torches = await self.inventory_count('torch')
+            current_torches = await self.inventory_count("torch")
             if current_torches < required_torches:
                 raise HaltException(
                     f"Not enough torches to complete trip. Need {required_torches - current_torches} more."
