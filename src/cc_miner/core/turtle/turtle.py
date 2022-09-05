@@ -1,6 +1,7 @@
 """Representation of a CC turtle."""
 
 import logging
+import math
 from typing import Any, Dict, List, cast
 
 from overrides import EnforceOverrides, overrides
@@ -16,6 +17,7 @@ from .exceptions import (
     MovementException,
 )
 from .types import Bearing, Direction, InventorySlotInfo, Location, Position
+import asyncio
 
 logger = cast(SuccessLogger, logging.getLogger(__name__))
 
@@ -48,7 +50,7 @@ class Turtle(EnforceOverrides):
     """The latest fuel level of the turtle."""
     _steps_from_home: int = 0
     """The amount of blocks away from home the turtle is."""
-    _bad_blocks: List[str] = ["cobble", "dirt", "gravel"]
+    _bad_blocks: List[str] = ["cobble", "dirt", "gravel", "tuff"]
     """The list of block types to discard during mining."""
     _fuel_blocks: List[str] = ["coal"]
     """The list of block/item types to use for fuel."""
@@ -66,6 +68,9 @@ class Turtle(EnforceOverrides):
         self.uid = uid
         self.socket = socket
         self._logger = cast(SuccessLogger, logging.getLogger(f"{__name__}.{self.uid}"))
+        self._logger.addHandler(
+            logging.FileHandler(f"logs/turtle_{self.uid}.log", mode="w")
+        )
 
     def __repr__(self) -> str:
         """The string representation of the `Turtle` object."""
@@ -98,7 +103,7 @@ class Turtle(EnforceOverrides):
             self._logger.info("Command successful")
         else:
             self._latest_command = f"{command} (FAILURE)"
-            self._logger.error("Command failed")
+            self._logger.warning(f"{command} command failed")
         return res
 
     async def check_fuel(self) -> None:
@@ -379,6 +384,27 @@ class Turtle(EnforceOverrides):
 
         self._logger.info("Dropped %s", search)
 
+    async def inventory_count(self, search: str) -> int:
+        """Return a count of the search item in the inventory.
+
+        Args:
+            search (str): The search string.add()
+
+        Returns:
+            int: The number of items found.
+        """
+        count = 0
+        for slot in self._slot_range:
+            res = await self._command(f"return turtle.getItemDetail({slot})")
+            if res.data is None:
+                # slot is empty
+                continue
+            details = InventorySlotInfo(**res.data)
+            if search in details.name:
+                count = count + details.count
+
+        return count
+
     async def inventory_select(self, search: str) -> None:
         """Select an item from the turtle's inventory.
 
@@ -581,7 +607,7 @@ class StripTurtle(Turtle):
     """blocks to leave between each branch"""
     branch_length: int = 47
     """number of blocks to mine in each branch"""
-    branch_pair_count: int = 8
+    branch_pair_count: int = 4
     """total number of pairs of branches"""
     prerun_fuel_check: bool = True
     """check if enough fuel before mining"""
@@ -597,7 +623,7 @@ class StripTurtle(Turtle):
         try:
             await self.inventory_select("torch")
         except InventoryException:
-            self._logger.error("Ran out of torches.")
+            self._logger.warning("Ran out of torches.")
             raise
         else:
             await self.place_block(Direction.UP)
@@ -608,6 +634,27 @@ class StripTurtle(Turtle):
         output = await super().get_status()
         output += f"Light Level:     {self.current_light_level}\n"
         return output
+
+    async def falling_block_check(self) -> None:
+        """Check if any falling blocks are in front of the turtle and mine until there isn't.
+
+        If there are block above the turtle, they get auto destroyed (like falling on a torch).
+        """
+        falling_blocks = ["gravel", "sand"]
+
+        while True:
+            data = await self.inspect(Direction.FORWARD)
+            if data == {}:
+                break
+
+            name: str = data.get("name", "")
+            if any(falling_block in name for falling_block in falling_blocks):
+                self._logger.debug("Block is falling block, mining it.")
+                await self.dig(Direction.FORWARD)
+                await asyncio.sleep(1)  # wait for block to fall if there is any more
+            else:
+                self._logger.debug("not falling block.")
+                break
 
     @overrides
     async def start(self) -> None:
@@ -633,19 +680,33 @@ class StripTurtle(Turtle):
                     f"Not enough fuel to complete trip. Need {required_fuel - current_fuel} more."
                 )
 
+            required_torches: int = math.ceil(self.branch_length // self.torch_light) * self.branch_pair_count
+
+            current_torches = await self.inventory_count('torch')
+            if current_torches < required_torches:
+                raise HaltException(
+                    f"Not enough torches to complete trip. Need {required_torches - current_torches} more."
+                )
+
         for _ in range(self.branch_pair_count):
             # continue main branch
             for _ in range(self.branch_spacing + 1):
+                await self.falling_block_check()
                 await self.dig_move(Direction.FORWARD)
                 await self.dig(Direction.UP)
 
             # update home location current point on main branch
-            self._home_location = self.position.location
+            self._home_location = Location(
+                x=self.position.location.x,
+                y=self.position.location.y,
+                z=self.position.location.z,
+            )
 
             # mine left branch
             await self.turn_left()
             for _ in range(2):
                 for _ in range(self.branch_length):
+                    await self.falling_block_check()
                     await self.dig_move(Direction.FORWARD)
                     await self.dig(Direction.UP)
 
@@ -682,12 +743,15 @@ class StripTurtle(Turtle):
                         except InventoryException:
                             # place failed
                             self.do_place_torches = False
+                        except InteractionException:
+                            # place failed because no blocks to place on
+                            pass
                         else:
                             # place success
                             self.current_light_level = self.torch_light
 
-                    # we don't need to dig move because we already mined the blocks
-                    await self.move(Direction.FORWARD)
+                    await self.falling_block_check()
+                    await self.dig_move(Direction.FORWARD)
                     self.current_light_level -= (
                         1  # decrease light level because we moved
                     )
@@ -703,12 +767,19 @@ class StripTurtle(Turtle):
                         except InventoryException:
                             # place failed
                             self.do_place_torches = False
+                        except InteractionException:
+                            # place failed because no blocks to place on
+                            pass
                         else:
                             # place success
                             self.current_light_level = self.torch_light
 
             # face forward again to prepare for next branch pair
             await self.turn_right()
+
+        self._home_location = Location(x=0, y=0, z=0)
+
+        await self._process_complete()
 
 
 class TestTurtle(StripTurtle):
@@ -717,4 +788,4 @@ class TestTurtle(StripTurtle):
     @overrides
     async def start(self) -> None:
         """The main turtle process."""
-        await self.refuel(20000)
+        await self.falling_block_check()
